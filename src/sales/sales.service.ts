@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { db } from '../database/drizzle.js';
 import { sales } from '../database/schema.js';
@@ -30,10 +30,18 @@ export class SalesService {
             .from(sales)
             .where(eq(sales.id, id));
 
+        if (!sale) {
+            throw new NotFoundException(
+                `Sale with id ${id} not found`,
+            );
+        }
+
         return sale;
     }
 
     async update(id: number, updateSaleDto: UpdateSaleDto,) {
+        await this.findOne(id);
+
         const [sale] = await db
             .update(sales)
             .set(updateSaleDto)
@@ -44,6 +52,8 @@ export class SalesService {
     }
 
     async remove(id: number) {
+        await this.findOne(id);
+        
         const [sale] = await db
             .delete(sales)
             .where(eq(sales.id, id))

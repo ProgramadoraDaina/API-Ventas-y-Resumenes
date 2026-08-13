@@ -13,7 +13,7 @@ El objetivo es construir una API REST que permita:
 - Obtener reportes diarios.
 - Obtener reportes mensuales.
 
-Actualmente el proyecto se encuentra en fase de implementación del CRUD completo y preparación del módulo de reportes.
+Actualmente el proyecto cuenta con CRUD completo de ventas, manejo de excepciones, módulo de reportes y documentación interactiva mediante Swagger/OpenAPI.
 
 ---
 
@@ -38,6 +38,10 @@ Actualmente el proyecto se encuentra en fase de implementación del CRUD complet
 - class-validator
 - class-transformer
 
+## Documentación
+
+- Swagger/OpenAPI
+
 ---
 
 # Estructura actual
@@ -50,6 +54,9 @@ src/
 │   └── schema.ts
 │
 ├── reports/
+│   ├── reports.controller.ts
+│   ├── reports.module.ts
+│   └── reports.service.ts
 │
 ├── sales/
 │   ├── dto/
@@ -96,6 +103,9 @@ src/
 - Módulo `SalesModule` creado.
 - `SalesController` creado.
 - `SalesService` creado.
+- Módulo `ReportsModule` creado.
+- `ReportsController` creado.
+- `ReportsService` creado.
 - Aplicación NestJS iniciando correctamente.
 
 ### Validaciones
@@ -118,6 +128,37 @@ src/
 - PATCH `/sales/:id`
 - DELETE `/sales/:id`
 
+### Reportes
+
+- GET `/reports/daily`
+  - Obtiene todas las ventas registradas durante el día actual.
+
+- GET `/reports/monthly`
+  - Obtiene las ventas del mes actual agrupadas por día.
+  - Calcula el total vendido por día mediante agregaciones SQL.
+
+### Manejo de excepciones
+
+- Implementación de `NotFoundException`.
+- Manejo de errores para registros inexistentes.
+- Respuestas HTTP 404 descriptivas.
+
+Implementado en:
+
+- GET `/sales/:id`
+- PATCH `/sales/:id`
+- DELETE `/sales/:id`
+
+### Documentación
+
+- Swagger/OpenAPI integrado.
+- Generación automática de documentación de endpoints.
+- Interfaz interactiva disponible en:
+
+```http
+GET /api
+```
+
 ### Drizzle ORM
 
 - Inserción de ventas.
@@ -126,6 +167,12 @@ src/
 - Actualización de ventas.
 - Eliminación de ventas.
 - Uso de `eq()` para búsquedas por ID.
+- Uso de `returning()`.
+- Uso de consultas SQL mediante `sql`.
+- Uso de filtros por fechas.
+- Uso de agregaciones SQL con `SUM()`.
+- Uso de agrupaciones mediante `GROUP BY`.
+- Uso de ordenamiento mediante `ORDER BY`.
 
 ### Conceptos implementados
 
@@ -136,30 +183,44 @@ src/
 - Inyección de dependencias.
 - CRUD con Drizzle ORM.
 - Uso de `returning()`.
+- NotFoundException.
+- Swagger/OpenAPI.
+- Reportes diarios.
+- Reportes mensuales.
+- Agrupaciones SQL.
+- Filtrado por fechas.
+- Consultas avanzadas con Drizzle ORM.
+
+---
 
 ## 🚧 En progreso
 
-### Manejo de excepciones
+### Testing
 
-- Implementación de `NotFoundException`.
-- Manejo de errores para registros inexistentes.
-- Respuestas HTTP 404 más descriptivas.
+- Diseño de estrategia de pruebas.
+- Preparación de tests unitarios.
+- Preparación de tests de integración.
+
+---
 
 ## 📋 Pendiente
 
-### Reportes
-
-- GET `/reports/daily`
-- GET `/reports/monthly`
-
-### Documentación
-
-- Swagger/OpenAPI.
-
 ### Testing
 
-- Tests unitarios.
-- Tests de integración.
+#### Unitarios
+
+- SalesService.
+- ReportsService.
+
+#### Integración
+
+- POST `/sales`
+- GET `/sales`
+- GET `/sales/:id`
+- PATCH `/sales/:id`
+- DELETE `/sales/:id`
+- GET `/reports/daily`
+- GET `/reports/monthly`
 
 ### Mejoras futuras
 
@@ -168,42 +229,60 @@ src/
 - Ordenamiento de resultados.
 - Filtro por método de pago.
 - Soft Delete (opcional).
+- Decoradores avanzados de Swagger (`@ApiTags`, `@ApiOperation`, `@ApiResponse`).
 
 ---
 
 # Próximos pasos recomendados
 
-## 1. Manejo de excepciones
+## 1. Testing
+
+Crear pruebas unitarias para:
+
+- SalesService.
+- ReportsService.
+
+Crear pruebas de integración para validar:
+
+```http
+POST   /sales
+GET    /sales
+GET    /sales/:id
+PATCH  /sales/:id
+DELETE /sales/:id
+GET    /reports/daily
+GET    /reports/monthly
+```
+
+## 2. Paginación
 
 Implementar:
 
-```ts
-throw new NotFoundException(
-  `Sale with id ${id} not found`,
-);
+```http
+GET /sales?page=1&limit=10
 ```
 
-en:
+## 3. Filtros
 
-- GET `/sales/:id`
-- PATCH `/sales/:id`
-- DELETE `/sales/:id`
-
-## 2. Reportes
-
-Crear el módulo `ReportsModule`.
-
-Endpoints:
+Agregar filtros opcionales:
 
 ```http
-GET /reports/daily
-GET /reports/monthly
+GET /sales?paymentMethod=cash
 ```
 
-## 3. Documentación
+```http
+GET /sales?startDate=2026-08-01&endDate=2026-08-31
+```
 
-Integrar Swagger/OpenAPI para documentar toda la API.
+## 4. Mejorar documentación
 
-## 4. Testing
+Agregar decoradores de Swagger:
 
-Crear pruebas unitarias y de integración para asegurar la estabilidad de la aplicación.
+```ts
+@ApiTags()
+@ApiOperation()
+@ApiResponse()
+@ApiProperty()
+```
+
+para generar documentación más detallada de la API.
