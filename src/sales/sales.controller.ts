@@ -1,9 +1,9 @@
-import { Body, Controller, Get, Post, Patch, Delete, Param, ParseIntPipe, } from '@nestjs/common';
+import { Body, Controller, Get, Post, Patch, Delete, Param, ParseIntPipe, Query } from '@nestjs/common';
 
 import { CreateSaleDto } from './dto/create-sale.dto.js';
 import { SalesService } from './sales.service.js';
-import { eq } from 'drizzle-orm';
 import { UpdateSaleDto } from './dto/update-sale.dto.js';
+import { QuerySaleDto } from './dto/query-sale.dto.js';
 
 @Controller('sales')
 export class SalesController {
@@ -16,8 +16,8 @@ export class SalesController {
     }
 
     @Get()
-    findAll() {
-        return this.salesService.findAll();
+    findAll(@Query() querySaleDto: QuerySaleDto) {
+        return this.salesService.findAll(querySaleDto);
     }
 
     @Get(':id')

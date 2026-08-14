@@ -61,14 +61,16 @@ src/
 ├── sales/
 │   ├── dto/
 │   │   ├── create-sale.dto.ts
-│   │   └── update-sale.dto.ts
+│   │   ├── update-sale.dto.ts
+│   │   └── query-sale.dto.ts
 │   │
 │   ├── enums/
 │   │   └── payment-method.enum.ts
 │   │
 │   ├── sales.controller.ts
 │   ├── sales.module.ts
-│   └── sales.service.ts
+│   ├── sales.service.ts
+│   └── sales.service.spec.ts
 │
 ├── app.module.ts
 └── main.ts
@@ -113,10 +115,13 @@ src/
 - Enum `PaymentMethod` implementado en TypeScript.
 - DTO `CreateSaleDto` implementado.
 - DTO `UpdateSaleDto` implementado utilizando `PartialType`.
+- DTO `QuerySaleDto` implementado.
 - `ValidationPipe` configurado globalmente.
 - Validación de:
   - monto mayor a 0.
   - método de pago válido.
+  - paginación.
+  - filtros de fechas.
   - transformación automática de tipos.
   - eliminación de propiedades no permitidas.
 
@@ -127,6 +132,38 @@ src/
 - GET `/sales/:id`
 - PATCH `/sales/:id`
 - DELETE `/sales/:id`
+
+#### Funcionalidades adicionales implementadas
+
+Paginación:
+
+```http
+GET /sales?page=1&limit=10
+```
+
+Filtro por método de pago:
+
+```http
+GET /sales?paymentMethod=cash
+```
+
+Filtro por fecha inicial:
+
+```http
+GET /sales?startDate=2026-08-01
+```
+
+Filtro por fecha final:
+
+```http
+GET /sales?endDate=2026-08-31
+```
+
+Combinación de filtros:
+
+```http
+GET /sales?paymentMethod=cash&startDate=2026-08-01&endDate=2026-08-31
+```
 
 ### Reportes
 
@@ -166,7 +203,10 @@ GET /api
 - Consulta de ventas por ID.
 - Actualización de ventas.
 - Eliminación de ventas.
-- Uso de `eq()` para búsquedas por ID.
+- Uso de `eq()` para búsquedas por ID y filtros.
+- Uso de `gte()` para filtros de fecha inicial.
+- Uso de `lte()` para filtros de fecha final.
+- Uso de `and()` para combinación dinámica de filtros.
 - Uso de `returning()`.
 - Uso de consultas SQL mediante `sql`.
 - Uso de filtros por fechas.
@@ -188,18 +228,30 @@ GET /api
 - Reportes diarios.
 - Reportes mensuales.
 - Agrupaciones SQL.
-- Filtrado por fechas.
 - Consultas avanzadas con Drizzle ORM.
+- Query Parameters.
+- Paginación.
+- Filtrado por método de pago.
+- Filtrado por rangos de fechas.
+- Consultas dinámicas con Drizzle ORM.
+- Uso de `eq()`.
+- Uso de `gte()` para filtros de fecha inicial.
+- Uso de `lte()` para filtros de fecha final.
+- Uso de `and()` para combinación dinámica de filtros.
+
+### Testing
+
+- Jest configurado correctamente.
+- Primer archivo `.spec.ts` creado.
+- Ejecución de pruebas validada correctamente.
 
 ---
-
 ## 🚧 En progreso
 
 ### Testing
 
-- Diseño de estrategia de pruebas.
-- Preparación de tests unitarios.
-- Preparación de tests de integración.
+- Implementación de tests unitarios.
+- Implementación de tests de integración.
 
 ---
 
@@ -224,10 +276,7 @@ GET /api
 
 ### Mejoras futuras
 
-- Filtros por fecha.
-- Paginación de ventas.
 - Ordenamiento de resultados.
-- Filtro por método de pago.
 - Soft Delete (opcional).
 - Decoradores avanzados de Swagger (`@ApiTags`, `@ApiOperation`, `@ApiResponse`).
 
@@ -254,27 +303,16 @@ GET    /reports/daily
 GET    /reports/monthly
 ```
 
-## 2. Paginación
+## 2. Ordenamiento
 
 Implementar:
 
 ```http
-GET /sales?page=1&limit=10
+GET /sales?sort=asc
+GET /sales?sort=desc
 ```
 
-## 3. Filtros
-
-Agregar filtros opcionales:
-
-```http
-GET /sales?paymentMethod=cash
-```
-
-```http
-GET /sales?startDate=2026-08-01&endDate=2026-08-31
-```
-
-## 4. Mejorar documentación
+## 3. Mejorar documentación
 
 Agregar decoradores de Swagger:
 
