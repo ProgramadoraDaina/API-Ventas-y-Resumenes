@@ -8,6 +8,13 @@
       "when": 1786573552339,
       "tag": "0000_elite_cobalt_man",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1786670545867,
+      "tag": "0001_friendly_bruce_banner",
+      "breakpoints": true
     }
   ]
 }
