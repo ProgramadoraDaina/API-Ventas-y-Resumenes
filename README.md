@@ -94,11 +94,18 @@ src/
 ### Esquema
 
 - Enum PostgreSQL `payment_method` creado.
+- Enum PostgreSQL `user_role` creado.
 - Tabla `sales` creada con los siguientes campos:
   - `id`
   - `total_amount`
   - `payment_method`
   - `created_at`
+- Tabla `users` creada con los siguientes campos:
+  - `id`
+  - `name`
+  - `email`
+  - `password`
+  - `role`
 
 ### NestJS
 
@@ -108,18 +115,30 @@ src/
 - Módulo `ReportsModule` creado.
 - `ReportsController` creado.
 - `ReportsService` creado.
+- Módulo `UsersModule` creado.
+- `UsersController` creado.
+- `UsersService` creado.
+- Módulo `AuthModule` creado.
+- `AuthController` creado.
+- `AuthService` creado.
 - Aplicación NestJS iniciando correctamente.
 
 ### Validaciones
 
 - Enum `PaymentMethod` implementado en TypeScript.
+- Enum `UserRole` implementado en TypeScript.
 - DTO `CreateSaleDto` implementado.
 - DTO `UpdateSaleDto` implementado utilizando `PartialType`.
 - DTO `QuerySaleDto` implementado.
+- DTO `CreateUserDto` implementado.
+- DTO `LoginDto` implementado.
 - `ValidationPipe` configurado globalmente.
 - Validación de:
   - monto mayor a 0.
   - método de pago válido.
+  - roles válidos.
+  - correo electrónico válido.
+  - longitud mínima de contraseña.
   - paginación.
   - filtros de fechas.
   - transformación automática de tipos.
@@ -165,6 +184,30 @@ Combinación de filtros:
 GET /sales?paymentMethod=cash&startDate=2026-08-01&endDate=2026-08-31
 ```
 
+### Usuarios
+
+- POST `/users`
+  - Registro de usuarios.
+  - Persistencia de usuarios en PostgreSQL.
+  - Asignación y validación de roles.
+
+### Autenticación
+
+- POST `/auth/login`
+  - Inicio de sesión mediante email y contraseña.
+  - Validación de credenciales.
+  - Generación de JWT (JSON Web Token).
+- Búsqueda de usuarios por correo electrónico.
+- Integración de `JwtModule`.
+
+### Seguridad
+
+- Hash de contraseñas mediante `bcrypt`.
+- Almacenamiento seguro de contraseñas en PostgreSQL.
+- Validación de contraseñas mediante `bcrypt.compare()`.
+- Generación de tokens JWT.
+- Configuración de expiración de tokens.
+
 ### Reportes
 
 - GET `/reports/daily`
@@ -203,6 +246,8 @@ GET /api
 - Consulta de ventas por ID.
 - Actualización de ventas.
 - Eliminación de ventas.
+- Inserción de usuarios.
+- Consulta de usuarios por correo electrónico.
 - Uso de `eq()` para búsquedas por ID y filtros.
 - Uso de `gte()` para filtros de fecha inicial.
 - Uso de `lte()` para filtros de fecha final.
@@ -238,6 +283,11 @@ GET /api
 - Uso de `gte()` para filtros de fecha inicial.
 - Uso de `lte()` para filtros de fecha final.
 - Uso de `and()` para combinación dinámica de filtros.
+- Hashing de contraseñas.
+- bcrypt.
+- JWT (JSON Web Token).
+- Authentication.
+- Login basado en credenciales.
 
 ### Testing
 
@@ -246,7 +296,18 @@ GET /api
 - Ejecución de pruebas validada correctamente.
 
 ---
+
 ## 🚧 En progreso
+
+### Seguridad y autorización
+
+- Implementación de `JwtStrategy`.
+- Implementación de `JwtAuthGuard`.
+- Implementación de `RolesGuard`.
+- Creación del decorador personalizado `@Roles()`.
+- Protección de endpoints mediante JWT.
+- Control de acceso basado en roles (RBAC).
+- Integración de autenticación JWT con Swagger.
 
 ### Testing
 
@@ -263,9 +324,13 @@ GET /api
 
 - SalesService.
 - ReportsService.
+- UsersService.
+- AuthService.
 
 #### Integración
 
+- POST `/users`
+- POST `/auth/login`
 - POST `/sales`
 - GET `/sales`
 - GET `/sales/:id`
@@ -284,16 +349,40 @@ GET /api
 
 # Próximos pasos recomendados
 
-## 1. Testing
+## 1. Seguridad y autorización
+
+Implementar:
+
+- `JwtStrategy`
+- `JwtAuthGuard`
+- `RolesGuard`
+- Decorador personalizado `@Roles()`
+
+Proteger endpoints como:
+
+```http
+GET    /sales
+POST   /sales
+PATCH  /sales/:id
+DELETE /sales/:id
+GET    /reports/daily
+GET    /reports/monthly
+```
+
+## 2. Testing
 
 Crear pruebas unitarias para:
 
 - SalesService.
 - ReportsService.
+- UsersService.
+- AuthService.
 
 Crear pruebas de integración para validar:
 
 ```http
+POST   /users
+POST   /auth/login
 POST   /sales
 GET    /sales
 GET    /sales/:id
@@ -303,7 +392,7 @@ GET    /reports/daily
 GET    /reports/monthly
 ```
 
-## 2. Ordenamiento
+## 3. Ordenamiento
 
 Implementar:
 
@@ -312,7 +401,7 @@ GET /sales?sort=asc
 GET /sales?sort=desc
 ```
 
-## 3. Mejorar documentación
+## 4. Mejorar documentación
 
 Agregar decoradores de Swagger:
 
@@ -321,6 +410,7 @@ Agregar decoradores de Swagger:
 @ApiOperation()
 @ApiResponse()
 @ApiProperty()
+@ApiBearerAuth()
 ```
 
-para generar documentación más detallada de la API.
+para generar documentación más detallada de la API y documentar los endpoints protegidos mediante JWT.
