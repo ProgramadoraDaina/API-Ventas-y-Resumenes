@@ -4,6 +4,9 @@ import { CreateSaleDto } from './dto/create-sale.dto.js';
 import { SalesService } from './sales.service.js';
 import { UpdateSaleDto } from './dto/update-sale.dto.js';
 import { QuerySaleDto } from './dto/query-sale.dto.js';
+import { UseGuards, Request } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('sales')
 export class SalesController {
@@ -14,7 +17,9 @@ export class SalesController {
         @Body() createSaleDto: CreateSaleDto,) {
         return this.salesService.create(createSaleDto,);
     }
-
+    
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
     @Get()
     findAll(@Query() querySaleDto: QuerySaleDto) {
         return this.salesService.findAll(querySaleDto);

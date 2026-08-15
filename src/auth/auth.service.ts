@@ -2,15 +2,13 @@ import { Injectable, UnauthorizedException, } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
-import { LoginDto } from './dto/create-auth.dto';
+import { LoginDto } from './dto/login.dto';
 
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private readonly usersService: UsersService,
-    private readonly jwtService: JwtService,
-  ) {}
+  constructor(private readonly usersService: UsersService,
+              private readonly jwtService: JwtService,) {}
 
   async login(loginDto: LoginDto) {
     const user = await this.usersService.findByEmail(
@@ -23,10 +21,10 @@ export class AuthService {
       );
     }
 
+    /*verifica que la contraseña sea correcta comparando ambos resultados hasheados*/
     const passwordMatch = await bcrypt.compare(
       loginDto.password,
-      user.password,
-    );
+      user.password,);
 
     if (!passwordMatch) {
       throw new UnauthorizedException(
@@ -40,9 +38,8 @@ export class AuthService {
       role: user.role,
     };
 
-    return {
-      access_token:
-        await this.jwtService.signAsync(payload),
+    return {/*convierte al payload en un token jwt y lo retorna*/
+      access_token: await this.jwtService.signAsync(payload),
     };
   }
 }

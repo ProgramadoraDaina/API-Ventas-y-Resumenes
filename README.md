@@ -13,7 +13,7 @@ El objetivo es construir una API REST que permita:
 - Obtener reportes diarios.
 - Obtener reportes mensuales.
 
-Actualmente el proyecto cuenta con CRUD completo de ventas, manejo de excepciones, módulo de reportes y documentación interactiva mediante Swagger/OpenAPI.
+Actualmente el proyecto cuenta con CRUD completo de ventas, filtros y paginación, gestión de usuarios, autenticación mediante JWT, protección de endpoints, manejo de excepciones, módulo de reportes y documentación interactiva mediante Swagger/OpenAPI.
 
 ---
 
@@ -42,12 +42,33 @@ Actualmente el proyecto cuenta con CRUD completo de ventas, manejo de excepcione
 
 - Swagger/OpenAPI
 
+## Seguridad
+
+- JWT (JSON Web Token)
+- Passport
+- Passport JWT
+- bcrypt
+
 ---
 
 # Estructura actual
 
 ```text
 src/
+│
+├── auth/
+│    ├── dto/
+│    │   └── login.dto.ts
+│    │
+│    ├── guards/
+│    │   └── jwt-auth.guard.ts
+│    │
+│    ├── strategies/
+│    │   └── jwt.strategy.ts
+│    │
+│    ├── auth.controller.ts
+│    ├── auth.module.ts
+│    └── auth.service.ts
 │
 ├── database/
 │   ├── drizzle.ts
@@ -71,6 +92,17 @@ src/
 │   ├── sales.module.ts
 │   ├── sales.service.ts
 │   └── sales.service.spec.ts
+│
+├── users/
+│   ├── dto/
+│   │   └── create-user.dto.ts
+│   │
+│   ├── enums/
+│   │   └── user-role.enum.ts
+│   │
+│   ├── users.controller.ts
+│   ├── users.module.ts
+│   └── users.service.ts
 │
 ├── app.module.ts
 └── main.ts
@@ -199,6 +231,8 @@ GET /sales?paymentMethod=cash&startDate=2026-08-01&endDate=2026-08-31
   - Generación de JWT (JSON Web Token).
 - Búsqueda de usuarios por correo electrónico.
 - Integración de `JwtModule`.
+- Endpoint protegido para obtener el usuario autenticado:
+  - GET `/users/profile`
 
 ### Seguridad
 
@@ -207,6 +241,11 @@ GET /sales?paymentMethod=cash&startDate=2026-08-01&endDate=2026-08-31
 - Validación de contraseñas mediante `bcrypt.compare()`.
 - Generación de tokens JWT.
 - Configuración de expiración de tokens.
+- Implementación de `JwtStrategy`.
+- Implementación de `JwtAuthGuard`.
+- Protección de endpoints mediante JWT.
+- Extracción de información del usuario autenticado desde el token.
+- Integración de autenticación JWT con Swagger/OpenAPI.
 
 ### Reportes
 
@@ -288,6 +327,12 @@ GET /api
 - JWT (JSON Web Token).
 - Authentication.
 - Login basado en credenciales.
+- Passport.
+- Passport JWT.
+- JwtStrategy.
+- JwtAuthGuard.
+- Protección de rutas.
+- Autenticación basada en Bearer Token.
 
 ### Testing
 
@@ -295,19 +340,22 @@ GET /api
 - Primer archivo `.spec.ts` creado.
 - Ejecución de pruebas validada correctamente.
 
+### Endpoints protegidos mediante JWT
+
+- GET `/users/profile`
+- GET `/sales`
+
+Probados mediante Swagger/OpenAPI utilizando autenticación Bearer Token.
+
 ---
 
 ## 🚧 En progreso
 
 ### Seguridad y autorización
 
-- Implementación de `JwtStrategy`.
-- Implementación de `JwtAuthGuard`.
 - Implementación de `RolesGuard`.
 - Creación del decorador personalizado `@Roles()`.
-- Protección de endpoints mediante JWT.
 - Control de acceso basado en roles (RBAC).
-- Integración de autenticación JWT con Swagger.
 
 ### Testing
 
@@ -353,10 +401,9 @@ GET /api
 
 Implementar:
 
-- `JwtStrategy`
-- `JwtAuthGuard`
 - `RolesGuard`
 - Decorador personalizado `@Roles()`
+- Protección de endpoints basada en roles
 
 Proteger endpoints como:
 
@@ -368,6 +415,7 @@ DELETE /sales/:id
 GET    /reports/daily
 GET    /reports/monthly
 ```
+
 
 ## 2. Testing
 

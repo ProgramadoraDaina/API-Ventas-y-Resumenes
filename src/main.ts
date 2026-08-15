@@ -22,6 +22,7 @@ async function bootstrap() {
     .setTitle('Restaurant Sales API')
     .setDescription('API para gestión de ventas y reportes')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(

@@ -15,6 +15,13 @@
       "when": 1786670545867,
       "tag": "0001_friendly_bruce_banner",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1786747519597,
+      "tag": "0002_large_ultimates",
+      "breakpoints": true
     }
   ]
 }

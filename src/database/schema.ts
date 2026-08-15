@@ -25,8 +25,8 @@ export const sales = pgTable('sales', {/*tabla ventas*/
 
 export const userRoleEnum = pgEnum('user_role', [
   'admin',
-  'manager',
   'employee',
+  'user',
 ])
 
 export const users = pgTable('users', { /**tabla usuarios*/
