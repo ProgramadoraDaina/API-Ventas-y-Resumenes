@@ -1,4 +1,4 @@
-import { integer, pgEnum, pgTable, serial, timestamp, varchar, } from 'drizzle-orm/pg-core';
+import { integer, pgEnum, pgTable, serial, timestamp, varchar,boolean, } from 'drizzle-orm/pg-core';
 
 export const paymentMethodEnum = pgEnum('payment_method',
     [
@@ -25,8 +25,7 @@ export const sales = pgTable('sales', {/*tabla ventas*/
 
 export const userRoleEnum = pgEnum('user_role', [
   'admin',
-  'employee',
-  'user',
+  'employee'
 ])
 
 export const users = pgTable('users', { /**tabla usuarios*/
@@ -49,4 +48,8 @@ export const users = pgTable('users', { /**tabla usuarios*/
   role: userRoleEnum('role')
     .default('employee')
     .notNull(),
+
+    mustChangePassword: boolean('must_change_password')
+  .default(true)
+  .notNull(),
 });

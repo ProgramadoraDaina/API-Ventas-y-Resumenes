@@ -40,6 +40,7 @@ export class AuthService {
 
     return {/*convierte al payload en un token jwt y lo retorna*/
       access_token: await this.jwtService.signAsync(payload),
+      mustChangePassword: user.mustChangePassword,
     };
   }
 }

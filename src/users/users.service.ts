@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { db } from '../database/drizzle.js';
 import { users } from '../database/schema.js';
@@ -38,4 +38,42 @@ export class UsersService {
 
         return user;
     }
+    async changePassword(
+  userId: number,
+  currentPassword: string,
+  newPassword: string,
+) {
+  const [user] = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, userId));
+
+  const passwordMatch = await bcrypt.compare(
+    currentPassword,
+    user.password,
+  );
+
+  if (!passwordMatch) {
+    throw new BadRequestException(
+      'La contraseña actual es incorrecta',
+    );
+  }
+
+  const hashedPassword = await bcrypt.hash(
+    newPassword,
+    10,
+  );
+
+  await db
+    .update(users)
+    .set({
+      password: hashedPassword,
+      mustChangePassword: false,
+    })
+    .where(eq(users.id, userId));
+
+  return {
+    message: 'Contraseña actualizada correctamente',
+  };
+}
 }
