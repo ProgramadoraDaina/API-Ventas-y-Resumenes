@@ -8,7 +8,7 @@ import { UserRole } from '../users/enums/user-role.enum.js';
 @Controller('reports')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class ReportsController {
-  constructor(private readonly reportsService: ReportsService,) {}
+  constructor(private readonly reportsService: ReportsService,) { }
 
   @Roles(UserRole.ADMIN, UserRole.EMPLOYEE,)
   @Get('daily')
@@ -20,5 +20,11 @@ export class ReportsController {
   @Get('monthly')
   getMonthlyReport() {
     return this.reportsService.getMonthlyReport();
+  }
+  
+  @Roles(UserRole.ADMIN)
+  @Get('dashboard')
+  getDashboard() {
+    return this.reportsService.getDashboard();
   }
 }
