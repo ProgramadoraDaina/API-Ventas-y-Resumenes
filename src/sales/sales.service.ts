@@ -23,7 +23,6 @@ export class SalesService {
     }
 
     async findAll(querySaleDto: QuerySaleDto, user: AuthUser,) {
-        console.log(querySaleDto);
         if (user.role === UserRole.EMPLOYEE &&
             (querySaleDto.startDate || querySaleDto.endDate)) {
             throw new ForbiddenException(

@@ -2,18 +2,22 @@
 
 ### Testing
 
+### Testing
+
 #### SalesService
+
 ✅ Configuración de Jest.
 ✅ Creación de sales.service.spec.ts.
 ✅ Configuración de TestingModule.
 ✅ Instanciación de SalesService.
+✅ Test de create().
+✅ Test de findAll().
+✅ Test de findOne().
+✅ Test de NotFoundException.
+✅ Test de update().
+✅ Test de remove().
 
 🚧 Pendiente:
-- Test de create().
-- Test de findAll().
-- Test de findOne().
-- Test de update().
-- Test de remove().
 
 #### ReportsService
 - Tests unitarios.
