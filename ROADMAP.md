@@ -2,8 +2,6 @@
 
 ### Testing
 
-### Testing
-
 #### SalesService
 
 ✅ Configuración de Jest.
@@ -17,19 +15,34 @@
 ✅ Test de update().
 ✅ Test de remove().
 
-🚧 Pendiente:
-
 #### ReportsService
-- Tests unitarios.
+
+✅ Tests unitarios.
 
 #### UsersService
-- Tests unitarios.
+
+✅ Tests unitarios.
 
 #### AuthService
-- Tests unitarios.
 
-#### Integración
-- Tests de endpoints principales.
+✅ Tests unitarios.
+
+#### Integración (E2E)
+
+✅ auth.e2e-spec.ts.
+✅ sales.e2e-spec.ts.
+✅ Prueba de login.
+✅ Prueba de endpoints protegidos con JWT.
+✅ Prueba de consulta de ventas.
+✅ Prueba de dashboard.
+✅ Ejecución mediante Supertest.
+
+#### Resultado actual
+
+✅ 4 suites de tests unitarios.
+✅ 24 tests unitarios pasando.
+✅ Tests e2e implementados.
+✅ 0 tests unitarios fallando.
 
 ---
 

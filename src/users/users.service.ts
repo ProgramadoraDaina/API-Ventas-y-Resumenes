@@ -1,8 +1,8 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { db } from '../database/drizzle.js';
-import { users } from '../database/schema.js';
-import { CreateUserDto } from './dto/create-user.dto.js';
+import { db } from '../database/drizzle';
+import { users } from '../database/schema';
+import { CreateUserDto } from './dto/create-user.dto';
 import { eq } from 'drizzle-orm';
 
 @Injectable()

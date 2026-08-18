@@ -3,7 +3,7 @@ import { IsDateString, IsEnum, IsInt, IsOptional, Min, IsIn,} from 'class-valida
 
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
-import { PaymentMethod } from '../enums/payment-method.enum.js';
+import { PaymentMethod } from '../enums/payment-method.enum';
 
 export class QuerySaleDto {
   @IsOptional()

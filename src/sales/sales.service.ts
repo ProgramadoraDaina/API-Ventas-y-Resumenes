@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException, ForbiddenException, } from '@nestjs/common';
-import { AuthUser } from '../auth/interfaces/auth-user.interface.js';
+import { AuthUser } from '../auth/interfaces/auth-user.interface';
 import { db } from '../database/drizzle';
 import { sales } from '../database/schema';
-import { CreateSaleDto } from './dto/create-sale.dto.js';
+import { CreateSaleDto } from './dto/create-sale.dto';
 import { eq, gte, lte, and, SQL, asc,desc, } from 'drizzle-orm';
 import { UpdateSaleDto } from './dto/update-sale.dto';
 import { QuerySaleDto } from './dto/query-sale.dto';

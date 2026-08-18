@@ -1,9 +1,9 @@
 import { Controller, UseGuards, Get } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
-import { RolesGuard } from '../auth/guards/roles.guard.js';
-import { ReportsService } from './reports.service.js';
-import { Roles } from '../auth/decorators/roles.decorator.js';
-import { UserRole } from '../users/enums/user-role.enum.js';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { ReportsService } from './reports.service';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { UserRole } from '../users/enums/user-role.enum';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags, } from '@nestjs/swagger';
 
 @ApiTags('Reports')

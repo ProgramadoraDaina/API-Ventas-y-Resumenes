@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { db } from '../database/drizzle.js';
-import { sales } from '../database/schema.js';
-import { gte, lt, sql } from 'drizzle-orm';
+import { db } from '../database/drizzle';
+import { sales } from '../database/schema';
+import { sql, and, gte, lt } from 'drizzle-orm';
 
 @Injectable()
 export class ReportsService {
@@ -24,7 +24,11 @@ export class ReportsService {
             .select()
             .from(sales)
             .where(
-                sql`${sales.createdAt} >= ${startOfDay} AND ${sales.createdAt} < ${endOfDay}`,);
+                and(
+                    gte(sales.createdAt, startOfDay),
+                    lt(sales.createdAt, endOfDay),
+                ),
+            );
     }
     async getMonthlyReport() {
         const today = new Date();
@@ -48,67 +52,73 @@ export class ReportsService {
             })
             .from(sales)
             .where(
-                sql`${sales.createdAt} >= ${startOfMonth}
-          AND ${sales.createdAt} < ${startOfNextMonth}`,
+                and(
+                    gte(sales.createdAt, startOfMonth),
+                    lt(sales.createdAt, startOfNextMonth),
+                ),
             )
             .groupBy(sql`DATE(${sales.createdAt})`)
             .orderBy(sql`DATE(${sales.createdAt})`);
     }
     async getDashboard() {
-    const today = new Date();
+        const today = new Date();
 
-    const startOfDay = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        today.getDate(),
-    );
-
-    const endOfDay = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        today.getDate() + 1,
-    );
-
-    const startOfMonth = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        1,
-    );
-
-    const startOfNextMonth = new Date(
-        today.getFullYear(),
-        today.getMonth() + 1,
-        1,
-    );
-
-    const [dailyStats] = await db
-        .select({
-            todaySales: sql<number>`COUNT(*)`,
-            todayTotal: sql<number>`COALESCE(SUM(${sales.totalAmount}), 0)`,
-        })
-        .from(sales)
-        .where(
-            sql`${sales.createdAt} >= ${startOfDay}
-                AND ${sales.createdAt} < ${endOfDay}`,
+        const startOfDay = new Date(
+            today.getFullYear(),
+            today.getMonth(),
+            today.getDate(),
         );
 
-    const [monthlyStats] = await db
-        .select({
-            monthSales: sql<number>`COUNT(*)`,
-            monthTotal: sql<number>`COALESCE(SUM(${sales.totalAmount}), 0)`,
-        })
-        .from(sales)
-        .where(
-            sql`${sales.createdAt} >= ${startOfMonth}
-                AND ${sales.createdAt} < ${startOfNextMonth}`,
+        const endOfDay = new Date(
+            today.getFullYear(),
+            today.getMonth(),
+            today.getDate() + 1,
         );
 
-    return {
-        todaySales: Number(dailyStats.todaySales),
-        todayTotal: Number(dailyStats.todayTotal),
+        const startOfMonth = new Date(
+            today.getFullYear(),
+            today.getMonth(),
+            1,
+        );
 
-        monthSales: Number(monthlyStats.monthSales),
-        monthTotal: Number(monthlyStats.monthTotal),
-    };
-}
+        const startOfNextMonth = new Date(
+            today.getFullYear(),
+            today.getMonth() + 1,
+            1,
+        );
+
+        const [dailyStats] = await db
+            .select({
+                todaySales: sql<number>`COUNT(*)`,
+                todayTotal: sql<number>`COALESCE(SUM(${sales.totalAmount}), 0)`,
+            })
+            .from(sales)
+            .where(
+                and(
+                    gte(sales.createdAt, startOfDay),
+                    lt(sales.createdAt, endOfDay),
+                ),
+            );
+
+        const [monthlyStats] = await db
+            .select({
+                monthSales: sql<number>`COUNT(*)`,
+                monthTotal: sql<number>`COALESCE(SUM(${sales.totalAmount}), 0)`,
+            })
+            .from(sales)
+            .where(
+                and(
+                    gte(sales.createdAt, startOfMonth),
+                    lt(sales.createdAt, startOfNextMonth),
+                ),
+            );
+
+        return {
+            todaySales: Number(dailyStats.todaySales),
+            todayTotal: Number(dailyStats.todayTotal),
+
+            monthSales: Number(monthlyStats.monthSales),
+            monthTotal: Number(monthlyStats.monthTotal),
+        };
+    }
 }

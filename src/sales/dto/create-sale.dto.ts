@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsEnum, IsInt, Min } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { PaymentMethod } from '../enums/payment-method.enum.js';
+import { PaymentMethod } from '../enums/payment-method.enum';
 
 export class CreateSaleDto {
   @Type(() => Number) /*validaciones*/

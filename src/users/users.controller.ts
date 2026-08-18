@@ -2,11 +2,11 @@ import { Body, Controller, Post, Get, Patch } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
 import { UseGuards, Request } from '@nestjs/common';
-import { RolesGuard } from '../auth/guards/roles.guard.js';
+import { RolesGuard } from '../auth/guards/roles.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { Roles } from '../auth/decorators/roles.decorator.js';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { UserRole } from './enums/user-role.enum.js';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { ApiBearerAuth, ApiOperation, ApiResponse, } from '@nestjs/swagger';
+import { UserRole } from './enums/user-role.enum';
 import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Controller('users')

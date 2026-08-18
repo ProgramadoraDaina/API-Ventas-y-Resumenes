@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Post, Patch, Delete, Param, ParseIntPipe, Query } from '@nestjs/common';
-import { AuthUser } from '../auth/interfaces/auth-user.interface.js';
-import { CreateSaleDto } from './dto/create-sale.dto.js';
-import { SalesService } from './sales.service.js';
-import { UpdateSaleDto } from './dto/update-sale.dto.js';
-import { QuerySaleDto } from './dto/query-sale.dto.js';
+import { AuthUser } from '../auth/interfaces/auth-user.interface';
+import { CreateSaleDto } from './dto/create-sale.dto';
+import { SalesService } from './sales.service';
+import { UpdateSaleDto } from './dto/update-sale.dto';
+import { QuerySaleDto } from './dto/query-sale.dto';
 import { UseGuards, Request } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';

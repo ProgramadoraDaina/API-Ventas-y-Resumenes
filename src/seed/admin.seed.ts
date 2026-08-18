@@ -1,7 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { db } from '../database/drizzle.js';
-import { users } from '../database/schema.js';
+import { db } from '../database/drizzle';
+import { users } from '../database/schema';
 import { eq } from 'drizzle-orm';
 
 @Injectable()
