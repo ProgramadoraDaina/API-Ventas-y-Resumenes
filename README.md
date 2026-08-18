@@ -4,7 +4,7 @@ API desarrollada con NestJS, TypeScript, PostgreSQL y Drizzle ORM para gestionar
 
 ## Objetivo del proyecto
 
-El objetivo es construir una API REST que permita:
+El objetivo es construir una API REST para la gestión de ventas de un restaurante que permita:
 
 - Registrar ventas.
 - Consultar ventas.
@@ -12,9 +12,17 @@ El objetivo es construir una API REST que permita:
 - Eliminar ventas.
 - Obtener reportes diarios.
 - Obtener reportes mensuales.
+- Gestionar usuarios.
+- Autenticar usuarios mediante JWT.
+- Controlar accesos mediante roles (RBAC).
+- Aplicar restricciones según el rol del usuario.
+- Gestionar contraseñas temporales y cambios obligatorios de contraseña.
 
-Actualmente el proyecto cuenta con CRUD completo de ventas, filtros y paginación, gestión de usuarios, autenticación mediante JWT, protección de endpoints, manejo de excepciones, módulo de reportes y documentación interactiva mediante Swagger/OpenAPI.
+Actualmente el proyecto cuenta con CRUD completo de ventas, filtros y paginación, gestión de usuarios, autenticación mediante JWT, autorización basada en roles (RBAC), protección de endpoints, restricciones específicas para usuarios EMPLOYEE, contraseñas temporales para nuevos usuarios, flujo obligatorio de cambio de contraseña, manejo de excepciones, módulo de reportes y documentación interactiva mediante Swagger/OpenAPI.
 
+
+Los usuarios ya no envían contraseña durante el registro.
+El sistema genera automáticamente una contraseña temporal basada en el correo electrónico y exige su modificación en el primer acceso.
 ---
 
 # Tecnologías utilizadas
@@ -63,6 +71,9 @@ src/
 │   │
 │   ├── dto/
 │   │   └── login.dto.ts
+│   │
+│   ├── interfaces/
+│   │   └── auth-user.interface.ts
 │   │
 │   ├── guards/
 │   │   ├── jwt-auth.guard.ts
@@ -182,7 +193,8 @@ src/
   - método de pago válido.
   - roles válidos.
   - correo electrónico válido.
-  - longitud mínima de contraseña.
+  - validación de correo electrónico único.
+  - longitud mínima de nueva contraseña.
   - paginación.
   - filtros de fechas.
   - transformación automática de tipos.
@@ -234,7 +246,9 @@ GET /sales?paymentMethod=cash&startDate=2026-08-01&endDate=2026-08-31
   - Registro de usuarios.
   - Persistencia de usuarios en PostgreSQL.
   - Asignación y validación de roles.
-
+  - Validación de correo electrónico duplicado.
+  - Generación automática de contraseña temporal.
+  - Inicialización automática de `must_change_password`.
 - PATCH `/users/change-password`
   - Cambio seguro de contraseña.
   - Verificación de contraseña actual.
@@ -271,6 +285,12 @@ GET /sales?paymentMethod=cash&startDate=2026-08-01&endDate=2026-08-31
 - Control de acceso basado en roles (RBAC).
 - Protección de creación de usuarios mediante rol ADMIN.
 - Flujo obligatorio de cambio de contraseña.
+- Restricción de acceso a ventas históricas para EMPLOYEE.
+- Restricción de modificación de ventas históricas para EMPLOYEE.
+- Restricción de eliminación de ventas históricas para EMPLOYEE.
+- Restricción de acceso a reportes mensuales para EMPLOYEE.
+- Generación automática de contraseñas temporales para nuevos usuarios.
+- Flujo de primer acceso con cambio obligatorio de contraseña.
 
 ### Reportes
 
@@ -380,6 +400,11 @@ GET /api
 - Restricción de creación de usuarios para ADMIN.
 - Inclusión del rol dentro del JWT.
 - Validación de permisos mediante metadata y Reflector.
+- Restricción de acceso a ventas históricas para EMPLOYEE.
+- Restricción de modificación de ventas históricas para EMPLOYEE.
+- Restricción de eliminación de ventas históricas para EMPLOYEE.
+- Restricción de acceso a reportes mensuales para EMPLOYEE.
+- Filtrado automático de ventas del día actual para EMPLOYEE.
 
 ### Inicialización del sistema
 
@@ -402,155 +427,51 @@ GET /api
 - POST   /sales
 - PATCH  /sales/:id
 - DELETE /sales/:id
+- GET `/reports/daily`
+- GET `/reports/monthly`
 
 Probados mediante Swagger/OpenAPI utilizando autenticación Bearer Token.
 
 ---
-
 ## 🚧 En progreso
-
-### Seguridad y autorización
-
-- Restricciones avanzadas para EMPLOYEE.
-- Generación automática de contraseñas temporales para nuevos empleados.
 
 ### Testing
 
 - Implementación de tests unitarios.
 - Implementación de tests de integración.
 
----
-
 ## 📋 Pendiente
 
-#### Unitarios
+### Testing
 
-- SalesService.
-- ReportsService.
-- UsersService.
-- AuthService.
+- Tests unitarios de SalesService.
+- Tests unitarios de ReportsService.
+- Tests unitarios de UsersService.
+- Tests unitarios de AuthService.
 
-#### Integración
+### Integración
 
-- POST `/users`
-- POST `/auth/login`
-- POST `/sales`
-- GET `/sales`
-- GET `/sales/:id`
-- PATCH `/sales/:id`
-- DELETE `/sales/:id`
-- GET `/reports/daily`
-- GET `/reports/monthly`
-
-## Roles y permisos del sistema
-
-### ADMIN
-
-- Gestión completa de usuarios.
-- Gestión completa de ventas.
-- Acceso a reportes diarios y mensuales.
-- Acceso a información histórica.
-
-### EMPLOYEE
-
-- Registro de ventas.
-- Consulta de ventas del día actual.
-- Modificación de ventas del día actual.
-- Eliminación de ventas del día actual.
-
-Restricciones:
-
-- No puede gestionar usuarios.
-- No puede acceder a reportes mensuales.
-- No puede acceder a información histórica.
-- No puede modificar ni eliminar ventas de días anteriores.
+- POST /users
+- POST /auth/login
+- POST /sales
+- GET /sales
+- GET /sales/:id
+- PATCH /sales/:id
+- DELETE /sales/:id
+- GET /reports/daily
+- GET /reports/monthly
 
 ### Mejoras futuras
 
 - Ordenamiento de resultados.
-- Soft Delete (opcional).
-- Decoradores avanzados de Swagger (`@ApiTags`, `@ApiOperation`, `@ApiResponse`).
-
-#### Gestión de contraseñas temporales
-
-Implementar un sistema de contraseñas temporales para la creación de usuarios.
-
-Flujo propuesto:
-
-1. Un usuario con rol `ADMIN` crea una nueva cuenta mediante el endpoint `POST /users`.
-
-2. El sistema genera automáticamente una contraseña temporal y la almacena de forma segura utilizando `bcrypt`.
-
-3. El empleado recibe la contraseña temporal proporcionada por el administrador.
-
-4. El empleado inicia sesión utilizando la contraseña temporal mediante el endpoint `POST /auth/login`.
-
-5. Durante el primer acceso, el sistema detecta que el usuario debe establecer una contraseña definitiva antes de continuar utilizando la aplicación.
-
-6. El usuario cambia su contraseña mediante un endpoint específico:
-
-   `PATCH /users/change-password`
-
-   Ejemplo:
-
-   {
-     "currentPassword": "Temp1234",
-     "newPassword": "MiClaveSegura123"
-   }
-
-7. Una vez actualizada la contraseña:
-
-   - La contraseña temporal deja de ser válida.
-   - El usuario puede utilizar normalmente todas las funcionalidades correspondientes a su rol.
-   - La cuenta se marca como inicializada.
-
-Posible modificación de la tabla `users`:
-
-id
-name
-email
-password
-role
-must_change_password
-
-Valores posibles:
-
-true  -> El usuario debe cambiar su contraseña.
-false -> El usuario ya configuró su contraseña definitiva.
-
-Beneficios:
-
-- El administrador controla la creación de usuarios.
-- Los empleados eligen su propia contraseña.
-- El administrador no conoce la contraseña definitiva del empleado.
-- Se replica un flujo utilizado habitualmente en sistemas empresariales.
-- Mejora la seguridad del sistema respecto a contraseñas asignadas permanentemente por terceros.
-
+- Soft Delete.
+- Dashboard de estadísticas.
+- Decoradores avanzados de Swagger.
 ---
 
 # Próximos pasos recomendados
 
-## 1. Seguridad y autorización
-
-Implementar restricciones avanzadas para EMPLOYEE:
-
-- Consultar únicamente ventas del día actual.
-- Modificar únicamente ventas del día actual.
-- Eliminar únicamente ventas del día actual.
-- Restringir acceso a información histórica.
-- Restringir acceso a reportes según rol.
-
-Proteger endpoints como:
-
-GET    /sales
-POST   /sales
-PATCH  /sales/:id
-DELETE /sales/:id
-GET    /reports/daily
-GET    /reports/monthly
-
-
-## 2. Testing
+## 1. Testing
 
 Crear pruebas unitarias para:
 
@@ -561,7 +482,6 @@ Crear pruebas unitarias para:
 
 Crear pruebas de integración para validar:
 
-```http
 POST   /users
 POST   /auth/login
 POST   /sales
@@ -571,16 +491,28 @@ PATCH  /sales/:id
 DELETE /sales/:id
 GET    /reports/daily
 GET    /reports/monthly
-```
+
+## 2. Dashboard de estadísticas
+
+Implementar:
+
+GET /reports/dashboard
+
+Ejemplo:
+
+{
+  "todaySales": 15,
+  "todayTotal": 250000,
+  "monthSales": 300,
+  "monthTotal": 5400000
+}
 
 ## 3. Ordenamiento
 
 Implementar:
 
-```http
 GET /sales?sort=asc
 GET /sales?sort=desc
-```
 
 ## 4. Mejorar documentación
 
@@ -593,5 +525,4 @@ Agregar decoradores de Swagger:
 @ApiProperty()
 @ApiBearerAuth()
 ```
-
 para generar documentación más detallada de la API y documentar los endpoints protegidos mediante JWT.

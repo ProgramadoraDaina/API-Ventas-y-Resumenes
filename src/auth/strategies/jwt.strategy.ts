@@ -5,13 +5,12 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy,) {
   constructor() {
-    super({
+    super({ /*llama al constructor de la clase padre*/
       jwtFromRequest:
-        ExtractJwt.fromAuthHeaderAsBearerToken(),
-
+        ExtractJwt.fromAuthHeaderAsBearerToken(), /*Buscá el token JWT dentro del header Authorization y
+                                                  extraélo solamente si viene con el formato Bearer TOKEN */
       ignoreExpiration: false,
-
-      secretOrKey: process.env.JWT_SECRET!,
+      secretOrKey: process.env.JWT_SECRET!, /*le asigno la firma*/
     });
   }
 

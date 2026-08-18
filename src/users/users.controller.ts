@@ -21,7 +21,7 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @ApiBearerAuth()
+  @ApiBearerAuth() /* Le indica a Swagger que este endpoint requiere un Bearer Token. */
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {
@@ -31,10 +31,7 @@ export class UsersController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Patch('change-password')
-  changePassword(
-    @Request() req,
-    @Body() changePasswordDto: ChangePasswordDto,
-  ) {
+  changePassword(@Request() req, @Body() changePasswordDto: ChangePasswordDto,) {
     return this.usersService.changePassword(
       req.user.id,
       changePasswordDto.currentPassword,

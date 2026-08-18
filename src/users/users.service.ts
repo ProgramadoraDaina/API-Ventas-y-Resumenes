@@ -7,73 +7,89 @@ import { eq } from 'drizzle-orm';
 
 @Injectable()
 export class UsersService {
-    async create(createUserDto: CreateUserDto) {
-        const hashedPassword = await bcrypt.hash(
-            createUserDto.password,
-            10,
-        );
+  async create(createUserDto: CreateUserDto) {
 
-        const [user] = await db
-            .insert(users)
-            .values({
-                name: createUserDto.name,
-                email: createUserDto.email,
-                password: hashedPassword,
-                role: createUserDto.role,
-            })
-            .returning();
+    const existingUser =
+      await this.findByEmail(
+        createUserDto.email,
+      );
 
-        return {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-        };
+    if (existingUser) {
+      throw new BadRequestException(
+        'Ya existe un usuario con ese email',
+      );
     }
-    async findByEmail(email: string) {
-        const [user] = await db
-            .select()
-            .from(users)
-            .where(eq(users.email, email));
+    
+    const username =
+      createUserDto.email.split('@')[0];
 
-        return user;
-    }
-    async changePassword(
-  userId: number,
-  currentPassword: string,
-  newPassword: string,
-) {
-  const [user] = await db
-    .select()
-    .from(users)
-    .where(eq(users.id, userId));
+    const temporaryPassword =
+      `${username}123`;
 
-  const passwordMatch = await bcrypt.compare(
-    currentPassword,
-    user.password,
-  );
+    const hashedPassword =
+      await bcrypt.hash(
+        temporaryPassword,
+        10,
+      );
 
-  if (!passwordMatch) {
-    throw new BadRequestException(
-      'La contraseña actual es incorrecta',
-    );
+    const [user] = await db
+      .insert(users)
+      .values({
+        name: createUserDto.name,
+        email: createUserDto.email,
+        password: hashedPassword,
+        role: createUserDto.role,
+        mustChangePassword: true,
+      })
+      .returning();
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      temporaryPassword,
+    };
   }
 
-  const hashedPassword = await bcrypt.hash(
-    newPassword,
-    10,
-  );
+  async findByEmail(email: string) {
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email));
 
-  await db
-    .update(users)
-    .set({
-      password: hashedPassword,
-      mustChangePassword: false,
-    })
-    .where(eq(users.id, userId));
+    return user;
+  }
 
-  return {
-    message: 'Contraseña actualizada correctamente',
-  };
-}
+  async changePassword(userId: number, currentPassword: string, newPassword: string,) {
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, userId));
+
+    const passwordMatch = await bcrypt.compare(
+      currentPassword,
+      user.password,);
+
+    if (!passwordMatch) {
+      throw new BadRequestException(
+        'La contraseña actual es incorrecta',
+      );
+    }
+
+    const hashedPassword = await bcrypt.hash(
+      newPassword,
+      10,
+    );
+
+    await db.update(users)
+      .set({
+        password: hashedPassword,
+        mustChangePassword: false,
+      })
+      .where(eq(users.id, userId));
+    return {
+      message: 'Contraseña actualizada correctamente',
+    };
+  }
 }

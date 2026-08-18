@@ -5,20 +5,14 @@ import { UserRole } from '../../users/enums/user-role.enum.js';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-    constructor(
-        private readonly reflector: Reflector,
-    ) { }
+    constructor(private readonly reflector: Reflector,) { }
 
-    canActivate(
-        context: ExecutionContext,
-    ): boolean {
-
-        const requiredRoles: UserRole[] =
-            this.reflector.getAllAndOverride(
-                ROLES_KEY,
+    canActivate(context: ExecutionContext,): boolean { /*se ejecuta cada vez que alguien intenta acceder
+                                                         a un endpoint protegido*/
+        const requiredRoles: UserRole[] = this.reflector.getAllAndOverride(ROLES_KEY, /*lee la metadata y busca 'roles'*/
                 [
-                    context.getHandler(),
-                    context.getClass(),
+                    context.getHandler(), /*devuelve el metodo actual*/
+                    context.getClass(), /*devuelve el controlador actual*/
                 ],
             );
 
@@ -26,18 +20,15 @@ export class RolesGuard implements CanActivate {
             return true;
         }
 
-        const request = context
-            .switchToHttp()
-            .getRequest();
+        const request = context.switchToHttp().getRequest();
 
-        const user = request.user;
+        const user = request.user; /*obtiene el usuario de la request*/
 
         if (!requiredRoles.includes(user.role)) {
             throw new ForbiddenException(
                 'No tienes permisos para acceder a este recurso',
             );
         }
-
         return true;
     }
 }

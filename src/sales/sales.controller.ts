@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, Patch, Delete, Param, ParseIntPipe, Query } from '@nestjs/common';
-
+import { AuthUser } from '../auth/interfaces/auth-user.interface.js';
 import { CreateSaleDto } from './dto/create-sale.dto.js';
 import { SalesService } from './sales.service.js';
 import { UpdateSaleDto } from './dto/update-sale.dto.js';
@@ -8,6 +8,9 @@ import { UseGuards, Request } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
+
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('sales')
 export class SalesController {
     constructor(private readonly salesService: SalesService,) { }
@@ -17,26 +20,32 @@ export class SalesController {
         @Body() createSaleDto: CreateSaleDto,) {
         return this.salesService.create(createSaleDto,);
     }
-    
-    @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard)
+
     @Get()
-    findAll(@Query() querySaleDto: QuerySaleDto) {
-        return this.salesService.findAll(querySaleDto);
+    findAll(@Query() querySaleDto: QuerySaleDto,
+        @Request() req: { user: AuthUser },) {
+        return this.salesService.findAll(
+            querySaleDto,
+            req.user,);
     }
 
     @Get(':id')
-    findOne(@Param('id', ParseIntPipe) id: number) {
-        return this.salesService.findOne(id);
+    findOne(@Param('id', ParseIntPipe) id: number, @Request() req: { user: AuthUser },) {
+        return this.salesService.findOne(
+            id,
+            req.user,
+        );
     }
 
     @Patch(':id')
-    update(@Param('id', ParseIntPipe) id: number, @Body() updateSaleDto: UpdateSaleDto,) {
-        return this.salesService.update(id, updateSaleDto,);
+    update(@Param('id', ParseIntPipe) id: number, @Body() updateSaleDto: UpdateSaleDto,
+        @Request() req: { user: AuthUser },) {
+        return this.salesService.update(id, updateSaleDto, req.user);
     }
 
     @Delete(':id')
-    remove(@Param('id', ParseIntPipe) id: number,) {
-        return this.salesService.remove(id);
+    remove(@Param('id', ParseIntPipe) id: number,
+        @Request() req: { user: AuthUser },) {
+        return this.salesService.remove(id, req.user);
     }
 }
