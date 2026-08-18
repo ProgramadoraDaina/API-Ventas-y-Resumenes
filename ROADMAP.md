@@ -1,36 +1,31 @@
-# Roadmap
-
 ## 🚧 En desarrollo
 
 ### Testing
 
-- Tests unitarios de SalesService.
-- Tests unitarios de ReportsService.
-- Tests unitarios de UsersService.
-- Tests unitarios de AuthService.
-- Tests de integración para los endpoints principales.
+#### SalesService
+✅ Configuración de Jest.
+✅ Creación de sales.service.spec.ts.
+✅ Configuración de TestingModule.
+✅ Instanciación de SalesService.
 
----
+🚧 Pendiente:
+- Test de create().
+- Test de findAll().
+- Test de findOne().
+- Test de update().
+- Test de remove().
 
-## 📋 Próxima versión
+#### ReportsService
+- Tests unitarios.
 
-### Ordenamiento
+#### UsersService
+- Tests unitarios.
 
-Implementar:
+#### AuthService
+- Tests unitarios.
 
-GET /sales?sort=asc
-
-GET /sales?sort=desc
-
-### Documentación
-
-Mejorar la documentación Swagger mediante:
-
-- @ApiTags()
-- @ApiOperation()
-- @ApiResponse()
-- @ApiProperty()
-- @ApiBearerAuth()
+#### Integración
+- Tests de endpoints principales.
 
 ---
 

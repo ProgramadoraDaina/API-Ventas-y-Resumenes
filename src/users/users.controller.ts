@@ -5,7 +5,7 @@ import { UseGuards, Request } from '@nestjs/common';
 import { RolesGuard } from '../auth/guards/roles.guard.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Roles } from '../auth/decorators/roles.decorator.js';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserRole } from './enums/user-role.enum.js';
 import { ChangePasswordDto } from './dto/change-password.dto';
 
@@ -14,16 +14,38 @@ export class UsersController {
   constructor(private readonly usersService: UsersService,) { }
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard,)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @Post()
-  create(@Body() createUserDto: CreateUserDto,) {
+  @ApiOperation({
+    summary: 'Crear un usuario',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Usuario creado correctamente',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Acceso denegado',
+  })
+  create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
-  @ApiBearerAuth() /* Le indica a Swagger que este endpoint requiere un Bearer Token. */
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('profile')
+  @ApiOperation({
+    summary: 'Obtener perfil del usuario autenticado',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Perfil obtenido correctamente',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'No autorizado',
+  })
   getProfile(@Request() req) {
     return req.user;
   }
@@ -31,7 +53,21 @@ export class UsersController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Patch('change-password')
-  changePassword(@Request() req, @Body() changePasswordDto: ChangePasswordDto,) {
+  @ApiOperation({
+    summary: 'Cambiar contraseña',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Contraseña actualizada correctamente',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Credenciales inválidas',
+  })
+  changePassword(
+    @Request() req,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ) {
     return this.usersService.changePassword(
       req.user.id,
       changePasswordDto.currentPassword,

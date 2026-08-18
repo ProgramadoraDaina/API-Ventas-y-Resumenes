@@ -1,14 +1,22 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { SalesService } from './sales.service';
 
 describe('SalesService', () => {
-  it('debería ejecutar Jest correctamente', () => {
-    expect(true).toBe(true);
+  let service: SalesService;
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [SalesService],
+    }).compile();
+
+    service = module.get<SalesService>(SalesService);
   });
 
-  it('debería sumar correctamente', () => {
-    expect(2 + 2).toBe(4);
+  it('should be defined', () => {
+    expect(service).toBeDefined();
   });
 
-  it('debería comparar strings', () => {
-    expect('cash').toBe('cash');
+  it('debería crear una instancia de SalesService', () => {
+    expect(service).toBeInstanceOf(SalesService);
   });
 });

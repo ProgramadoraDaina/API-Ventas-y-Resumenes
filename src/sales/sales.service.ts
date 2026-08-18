@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException, ForbiddenException, } from '@nestjs/common';
 import { AuthUser } from '../auth/interfaces/auth-user.interface.js';
-import { db } from '../database/drizzle.js';
-import { sales } from '../database/schema.js';
+import { db } from '../database/drizzle';
+import { sales } from '../database/schema';
 import { CreateSaleDto } from './dto/create-sale.dto.js';
-import { eq, gte, lte, and, SQL } from 'drizzle-orm';
-import { UpdateSaleDto } from './dto/update-sale.dto.js';
-import { QuerySaleDto } from './dto/query-sale.dto.js';
-import { UserRole } from '../users/enums/user-role.enum.js';
+import { eq, gte, lte, and, SQL, asc,desc, } from 'drizzle-orm';
+import { UpdateSaleDto } from './dto/update-sale.dto';
+import { QuerySaleDto } from './dto/query-sale.dto';
+import { UserRole } from '../users/enums/user-role.enum';
 
 @Injectable()
 export class SalesService {
@@ -23,6 +23,7 @@ export class SalesService {
     }
 
     async findAll(querySaleDto: QuerySaleDto, user: AuthUser,) {
+        console.log(querySaleDto);
         if (user.role === UserRole.EMPLOYEE &&
             (querySaleDto.startDate || querySaleDto.endDate)) {
             throw new ForbiddenException(
@@ -32,6 +33,11 @@ export class SalesService {
 
         const page = querySaleDto.page ?? 1;/*si no recibe page usa 1*/
         const limit = querySaleDto.limit ?? 10;
+
+        const orderByClause =
+            querySaleDto.sort === 'asc'
+                ? asc(sales.createdAt)
+                : desc(sales.createdAt);
 
         const conditions: SQL[] = [];
 
@@ -87,15 +93,17 @@ export class SalesService {
                 .select()
                 .from(sales)
                 .where(and(...conditions))
+                .orderBy(orderByClause)
                 .limit(limit)
                 .offset((page - 1) * limit);
         }
         return db       /*retorna las primeras ventas*/
             .select()
             .from(sales)
+            .orderBy(orderByClause)
             .limit(limit)
             .offset((page - 1) * limit);/*saltea la cantidad de ventas necesaria para llegar a la
-                                        pagina deseada*/
+                                                pagina deseada*/
     }
 
     async findOne(id: number, user: AuthUser,) {

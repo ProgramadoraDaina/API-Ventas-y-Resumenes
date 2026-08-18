@@ -65,6 +65,8 @@
   - filtros de fechas.
   - transformación automática de tipos.
   - eliminación de propiedades no permitidas.
+  - ordenamiento ascendente y descendente.
+  - Documentación Swagger de DTOs.
 
 ### Ventas
 
@@ -76,35 +78,32 @@
 
 #### Funcionalidades adicionales implementadas
 
+
 Paginación:
 
-```http
 GET /sales?page=1&limit=10
-```
 
 Filtro por método de pago:
 
-```http
 GET /sales?paymentMethod=cash
-```
 
 Filtro por fecha inicial:
 
-```http
 GET /sales?startDate=2026-08-01
-```
 
 Filtro por fecha final:
 
-```http
 GET /sales?endDate=2026-08-31
-```
 
 Combinación de filtros:
 
-```http
 GET /sales?paymentMethod=cash&startDate=2026-08-01&endDate=2026-08-31
-```
+
+Ordenamiento por fecha:
+
+GET /sales?sort=asc
+
+GET /sales?sort=desc
 
 ### Usuarios
 
@@ -201,6 +200,13 @@ Implementado en:
 
 - Swagger/OpenAPI integrado.
 - Generación automática de documentación de endpoints.
+- Uso de `@ApiTags()`.
+- Uso de `@ApiOperation()`.
+- Uso de `@ApiResponse()`.
+- Uso de `@ApiProperty()`.
+- Uso de `@ApiPropertyOptional()`.
+- Uso de `@ApiBearerAuth()`.
+- Documentación de DTOs con ejemplos y descripciones.
 - Interfaz interactiva disponible en:
 
 ```http
@@ -226,6 +232,8 @@ GET /api
 - Uso de agregaciones SQL con `SUM()`.
 - Uso de agrupaciones mediante `GROUP BY`.
 - Uso de ordenamiento mediante `ORDER BY`.
+- Uso de `asc()` para ordenamiento ascendente.
+- Uso de `desc()` para ordenamiento descendente.
 
 ### Conceptos implementados
 
@@ -269,11 +277,23 @@ GET /api
 - Reflector.
 - Cambio seguro de contraseñas.
 - Inicialización de usuarios.
+- Ordenamiento de resultados.
+- Uso de `ORDER BY`.
+- Ordenamiento ascendente y descendente.
+- Swagger decorators.
+- ApiTags.
+- ApiOperation.
+- ApiResponse.
+- ApiProperty.
+- ApiPropertyOptional.
+- Documentación automática de DTOs.
 
 ### Testing
 
 - Jest configurado correctamente.
 - Primer archivo `.spec.ts` creado.
+- TestingModule de NestJS configurado.
+- Instanciación de `SalesService` validada.
 - Ejecución de pruebas validada correctamente.
 
 ### Control de acceso (RBAC)
@@ -313,5 +333,6 @@ GET /api
 - DELETE /sales/:id
 - GET `/reports/daily`
 - GET `/reports/monthly`
+- GET `/reports/dashboard`
 
 Probados mediante Swagger/OpenAPI utilizando autenticación Bearer Token.

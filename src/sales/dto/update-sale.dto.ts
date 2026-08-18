@@ -1,4 +1,4 @@
-import { PartialType } from '@nestjs/mapped-types';
+import { PartialType } from '@nestjs/swagger';
 import { CreateSaleDto } from './create-sale.dto.js';
 
 export class UpdateSaleDto extends PartialType(CreateSaleDto) {}/*hereda todos los campos de
