@@ -364,7 +364,6 @@ GET /api
 
 - Creación automática de un administrador inicial.
 - Verificación de existencia previa de administradores.
-- Seed ejecutado al iniciar la aplicación.
 - Cuenta inicial:
 
   Email: admin@restaurant.com

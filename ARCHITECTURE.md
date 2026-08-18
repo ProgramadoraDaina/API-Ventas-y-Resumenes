@@ -59,9 +59,6 @@ src/
 │   ├── sales.service.ts
 │   └── sales.service.spec.ts
 │
-├── seed/
-│   └── admin.seed.ts
-│
 ├── users/
 │   │
 │   ├── dto/

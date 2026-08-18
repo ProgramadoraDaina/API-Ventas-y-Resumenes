@@ -31,7 +31,6 @@ export class UsersService {
         temporaryPassword,
         10,
       );
-
     const [user] = await db
       .insert(users)
       .values({
