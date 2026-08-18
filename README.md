@@ -71,7 +71,7 @@ El objetivo es construir una API REST para la gestión de ventas que permita:
 
 ## Documentación del proyecto
 
-- [Estado actual del desarrollo](docsdocs/ROADMAP.mdRE.md)
+- [Estado actual del desarrollo](ROADMAP.md)
 
 ---
 
@@ -81,4 +81,53 @@ Swagger disponible en:
 
 ```text
 http://localhost:3001/api
-´´´
+```
+
+## Instalación
+
+### 1. Clonar el repositorio
+
+```bash
+git clone https://github.com/ProgramadoraDaina/API-Ventas-y-Resumenes.git
+cd API-Ventas-y-Resumenes
+```
+
+### 2. Instalar dependencias
+
+```bash
+pnpm install
+```
+
+### 3. Configurar variables de entorno
+
+Crear un archivo `.env`:
+
+```env
+PORT=3001
+
+DATABASE_URL=
+
+JWT_SECRET=
+```
+
+### 4. Ejecutar migraciones
+
+```bash
+pnpm drizzle-kit push
+```
+
+### 5. Iniciar la aplicación
+
+```bash
+pnpm run start:dev
+```
+
+---
+
+## Swagger
+
+Disponible en:
+
+```text
+http://localhost:3001/api
+```

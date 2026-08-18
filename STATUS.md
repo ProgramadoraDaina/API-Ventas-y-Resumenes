@@ -156,6 +156,10 @@ GET /sales?sort=desc
 - Restricción de acceso a reportes mensuales para EMPLOYEE.
 - Generación automática de contraseñas temporales para nuevos usuarios.
 - Flujo de primer acceso con cambio obligatorio de contraseña.
+- Validación estricta mediante ValidationPipe.
+- Eliminación automática de propiedades no permitidas (`whitelist`).
+- Bloqueo de propiedades no permitidas (`forbidNonWhitelisted`).
+- Transformación automática de tipos (`transform`).
 
 ### Reportes
 
@@ -187,14 +191,24 @@ Ejemplo:
 ### Manejo de excepciones
 
 - Implementación de `NotFoundException`.
-- Manejo de errores para registros inexistentes.
-- Respuestas HTTP 404 descriptivas.
+- Implementación de `BadRequestException`.
+- Implementación de `UnauthorizedException`.
+- Implementación de `ForbiddenException`.
+- Manejo de registros inexistentes.
+- Manejo de credenciales inválidas.
+- Manejo de accesos sin permisos.
+- Manejo de datos inválidos.
+- Respuestas HTTP descriptivas.
 
 Implementado en:
 
 - GET `/sales/:id`
 - PATCH `/sales/:id`
 - DELETE `/sales/:id`
+- POST `/auth/login`
+- POST `/users`
+- PATCH `/users/change-password`
+- Endpoints protegidos mediante RBAC.
 
 ### Documentación
 
@@ -208,6 +222,9 @@ Implementado en:
 - Uso de `@ApiBearerAuth()`.
 - Documentación de DTOs con ejemplos y descripciones.
 - Interfaz interactiva disponible en:
+- Documentación Swagger protegida mediante autenticación Bearer Token.
+- Ejemplos de request y response documentados.
+- DTOs documentados con ejemplos y validaciones.
 
 ```http
 GET /api
@@ -287,14 +304,47 @@ GET /api
 - ApiProperty.
 - ApiPropertyOptional.
 - Documentación automática de DTOs.
+- Jest.
+- TestingModule.
+- Unit Testing.
+- Integration Testing (E2E).
+- Supertest.
+- Mocking con Jest.
+- Cobertura de código.
 
 ### Testing
 
 - Jest configurado correctamente.
-- Primer archivo `.spec.ts` creado.
-- TestingModule de NestJS configurado.
-- Instanciación de `SalesService` validada.
-- Ejecución de pruebas validada correctamente.
+- TestingModule de NestJS implementado.
+- Tests unitarios para:
+  - AuthService.
+  - UsersService.
+  - SalesService.
+  - ReportsService.
+- Tests unitarios para:
+  - AuthController.
+  - UsersController.
+  - SalesController.
+  - ReportsController.
+- Tests unitarios para:
+  - JwtStrategy.
+  - RolesGuard.
+- Tests E2E implementados mediante Supertest.
+- Validación de autenticación JWT.
+- Validación de endpoints protegidos.
+- Validación de autorización basada en roles.
+- Validación de reportes.
+- Validación de operaciones CRUD.
+
+#### Resultado actual
+
+- ✅ 10 suites de pruebas.
+- ✅ 46 tests unitarios pasando.
+- ✅ 0 tests fallando.
+- ✅ Cobertura de statements: 73.23%.
+- ✅ Cobertura de branches: 66.66%.
+- ✅ Cobertura de funciones: 82.22%.
+- ✅ Cobertura de líneas: 75%.
 
 ### Control de acceso (RBAC)
 

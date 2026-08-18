@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { db } from '../database/drizzle';
 import { users } from '../database/schema';
@@ -19,7 +19,7 @@ export class UsersService {
         'Ya existe un usuario con ese email',
       );
     }
-    
+
     const username =
       createUserDto.email.split('@')[0];
 
@@ -67,6 +67,11 @@ export class UsersService {
       .from(users)
       .where(eq(users.id, userId));
 
+    if (!user) {
+      throw new NotFoundException(
+        'Usuario no encontrado',
+      );
+    }
     const passwordMatch = await bcrypt.compare(
       currentPassword,
       user.password,);
