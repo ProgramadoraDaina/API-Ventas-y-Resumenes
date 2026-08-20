@@ -1,10 +1,13 @@
 import 'dotenv/config';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { Pool } from 'pg';
 
-import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
 
-const connectionString = process.env.DATABASE_URL!;
+  max: 20,  /*Máximo de conexiones simultáneas*/
+  idleTimeoutMillis: 20000,   /*Cierra conexiones inactivas después de 20 segundos*/
+  connectionTimeoutMillis: 10000, /*Tiempo de espera para conectarse*/
+});
 
-const client = postgres(connectionString);
-
-export const db = drizzle(client);/*crea instancia drizzle*/
+export const db = drizzle(pool);/*crea instancia drizzle*/
