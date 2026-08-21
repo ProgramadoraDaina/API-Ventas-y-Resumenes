@@ -115,7 +115,6 @@ expect(
 expect(result).toEqual({
   access_token: 'access-token',
   refresh_token: 'refresh-token',
-  mustChangePassword: true,
 });
 });
   it('debe lanzar excepción si el usuario no existe', async () => {

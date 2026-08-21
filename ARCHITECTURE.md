@@ -5,6 +5,13 @@
 ```text
 src/
 │
+├── common/
+│   └── filters/
+│       └── all-exceptions.filter.ts
+│ 
+├── config/
+│   └── env.validation.ts
+│ 
 ├── auth/
 │   │
 │   ├── decorators/
@@ -15,10 +22,12 @@ src/
 │   │   ├── refresh-token.dto.ts
 │   │   └── register.dto.ts
 │   │
-│   ├── guards/
+│   ├── guards/  
 │   │   ├── jwt-auth.guard.ts
-│   │   ├── roles.guard.spec.ts
-│   │   └── roles.guard.ts
+│   │   ├── refresh-token.guard.ts
+│   │   ├── refresh-token.guard.spec.ts
+│   │   ├── roles.guard.ts
+│   │   └── roles.guard.spec.ts
 │   │
 │   ├── interfaces/
 │   │   ├── auth-user.interface.ts
@@ -65,7 +74,7 @@ src/
 ├── users/
 │   │
 │   ├── dto/
-│   │   └──update-role.dto.ts
+│   │   └── update-role.dto.ts
 │   │
 │   ├── enums/
 │   │   └── user-role.enum.ts

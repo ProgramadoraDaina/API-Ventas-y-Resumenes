@@ -54,7 +54,13 @@ describe('SalesService', () => {
     }),
   });
 
-  const result = await service.create(createSaleDto);
+  const user = {
+    id: 1,
+    role: UserRole.ADMIN,
+    email: 'admin@test.com',
+  };
+
+  const result = await service.create(createSaleDto, user);
 
   expect(result).toEqual(saleMock);
 });

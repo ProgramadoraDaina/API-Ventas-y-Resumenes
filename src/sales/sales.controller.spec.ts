@@ -46,6 +46,13 @@ describe('SalesController', () => {
       paymentMethod: PaymentMethod.CASH,
     };
 
+    const req = {
+      user: {
+        id: 1,
+        role: 'admin',
+      },
+    };
+
     const expectedSale = {
       id: 1,
       ...dto,
@@ -55,11 +62,17 @@ describe('SalesController', () => {
       expectedSale,
     );
 
-    const result = await controller.create(dto);
+    const result = await controller.create(
+      dto,
+      req as any,
+    );
 
     expect(
       mockSalesService.create,
-    ).toHaveBeenCalledWith(dto);
+    ).toHaveBeenCalledWith(
+      dto,
+      req.user,
+    );
 
     expect(result).toEqual(expectedSale);
   });

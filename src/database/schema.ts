@@ -1,4 +1,4 @@
-import { integer, pgEnum, pgTable, serial, timestamp, varchar, boolean, index, text } from 'drizzle-orm/pg-core';
+import { integer, pgEnum, pgTable, serial, timestamp, varchar, index, text, uuid } from 'drizzle-orm/pg-core';
 
 export const paymentMethodEnum = pgEnum('payment_method',
   [
@@ -18,7 +18,9 @@ export const userRoleEnum = pgEnum('user_role', [
 export const sales = pgTable(
   'sales',
   {
-    id: serial('id').primaryKey(),
+    id: uuid('id')
+      .defaultRandom()
+      .primaryKey(),
 
     totalAmount: integer('total_amount')
       .notNull(),
@@ -31,7 +33,7 @@ export const sales = pgTable(
       .defaultNow()
       .notNull(),
 
-    createdBy: integer('created_by')
+    createdBy: uuid('created_by')
       .references(() => users.id)
       .notNull(),
   },
@@ -58,7 +60,9 @@ export const sales = pgTable(
 );
 
 export const users = pgTable('users', {/**tabla usuarios*/
-  id: serial('id').primaryKey(),
+  id: uuid('id')
+    .defaultRandom()
+    .primaryKey(),
 
   name: varchar('name', {
     length: 100,

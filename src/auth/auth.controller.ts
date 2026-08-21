@@ -4,18 +4,16 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard, } from './guards/jwt-auth.guard';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { Throttle } from '@nestjs/throttler';
 import { RegisterDto } from './dto/register.dto';
-
+import { RefreshTokenGuard } from './guards/refresh-token.guard';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService,
-    private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,) { }
+  constructor(
+    private readonly authService: AuthService,
+  ) { }
 
   @Post('register')
   @ApiOperation({
@@ -90,21 +88,11 @@ export class AuthController {
     status: 403,
     description: 'Refresh token inválido',
   })
-  refresh(
-    @Body() dto: RefreshTokenDto,) {
-    const payload = this.jwtService.verify(
-      dto.refreshToken,
-      {
-        secret:
-          this.configService.get<string>(
-            'JWT_REFRESH_SECRET',
-          ),
-      },
-    );
-
+  @UseGuards(RefreshTokenGuard)
+  refresh(@Body() dto: RefreshTokenDto, @Req() req,) {
     return this.authService.refresh(
-      payload.sub,
-      dto.refreshToken,
+      req.user.sub,
+      req.refreshToken,
     );
   }
 }

@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -17,26 +17,8 @@ describe('AuthController', () => {
   };
 
   const mockConfigService = {
-    get: jest.fn((key: string) => {
-      switch (key) {
-        case 'JWT_SECRET':
-          return 'access-secret';
-
-        case 'JWT_REFRESH_SECRET':
-          return 'refresh-secret';
-
-        case 'JWT_EXPIRES_IN':
-          return '15m';
-
-        case 'JWT_REFRESH_EXPIRES_IN':
-          return '7d';
-
-        default:
-          return undefined;
-      }
-    }),
+    get: jest.fn(),
   };
-
   beforeEach(async () => {
     const module: TestingModule =
       await Test.createTestingModule({
@@ -57,9 +39,10 @@ describe('AuthController', () => {
         ],
       }).compile();
 
-    controller = module.get<AuthController>(
-      AuthController,
-    );
+    controller =
+      module.get<AuthController>(
+        AuthController,
+      );
 
     jest.clearAllMocks();
   });
@@ -69,48 +52,55 @@ describe('AuthController', () => {
   });
 
   it('debe llamar al servicio login', async () => {
-  const dto = {
-    email: 'admin@test.com',
-    password: '123456',
-  };
+    const dto = {
+      email: 'admin@test.com',
+      password: '123456',
+    };
 
-  mockAuthService.login.mockResolvedValue({
-    access_token: 'token',
-    refresh_token: 'refresh-token',
-    mustChangePassword: true,
-  });
-
-  const result = await controller.login(dto);
-
-  expect(
-    mockAuthService.login,
-  ).toHaveBeenCalledWith(dto);
-
-  expect(result).toEqual({
-    access_token: 'token',
-    refresh_token: 'refresh-token',
-    mustChangePassword: true,
-  });
-});
-  it('debe refrescar tokens', () => {
-    mockConfigService.get.mockReturnValue(
-      'refresh-secret',
-    );
-
-    mockJwtService.verify.mockReturnValue({
-      sub: 1,
+    mockAuthService.login.mockResolvedValue({
+      access_token: 'token',
+      refresh_token: 'refresh-token',
+      mustChangePassword: true,
     });
+
+    const result = await controller.login(dto);
+
+    expect(
+      mockAuthService.login,
+    ).toHaveBeenCalledWith(dto);
+
+    expect(result).toEqual({
+      access_token: 'token',
+      refresh_token: 'refresh-token',
+      mustChangePassword: true,
+    });
+  });
+  it('debe refrescar tokens', async () => {
+    const req = {
+      user: {
+        sub: '550e8400-e29b-41d4-a716-446655440000',
+      },
+      refreshToken: 'token',
+    };
 
     mockAuthService.refresh.mockResolvedValue({
       access_token: 'nuevo-access',
       refresh_token: 'nuevo-refresh',
     });
 
-    return expect(
-      controller.refresh({
-        refreshToken: 'token',
-      }),
-    ).resolves.toEqual({
+    const result = await controller.refresh(
+      { refreshToken: 'token' } as any,
+      req as any,
+    );
+
+    expect(
+      mockAuthService.refresh,
+    ).toHaveBeenCalledWith(
+      req.user.sub,
+      req.refreshToken,
+    );
+
+    expect(result).toEqual({
       access_token: 'nuevo-access',
       refresh_token: 'nuevo-refresh',
     });
@@ -120,9 +110,12 @@ describe('AuthController', () => {
       undefined,
     );
 
+    const userId =
+      '550e8400-e29b-41d4-a716-446655440000';
+
     const req = {
       user: {
-        id: 1,
+        id: userId,
       },
     };
 
@@ -130,6 +123,6 @@ describe('AuthController', () => {
 
     expect(
       mockAuthService.logout,
-    ).toHaveBeenCalledWith(1);
+    ).toHaveBeenCalledWith(userId);
   });
 });

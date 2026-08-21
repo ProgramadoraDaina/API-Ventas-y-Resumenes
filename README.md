@@ -31,6 +31,13 @@ El objetivo es construir una API REST para la gestión de ventas que permita:
 - Optimización de consultas mediante índices PostgreSQL.
 - Trazabilidad de ventas mediante asociación con usuarios.
 - Restricción de acceso a ventas según propietario.
+- UUID como identificadores públicos.
+- Refresh Token Rotation.
+- RefreshTokenGuard.
+- Global Exception Filter.
+- Validación centralizada de variables de entorno.
+- Helmet.
+- Rate Limiting mediante Throttler.
 
 ---
 

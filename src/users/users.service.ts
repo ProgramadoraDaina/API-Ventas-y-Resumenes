@@ -17,7 +17,7 @@ export class UsersService {
   }
 
   async updateRefreshToken(
-    userId: number,
+    userId: string,
     hashedRefreshToken: string | null,
   ) {
     await db
@@ -28,7 +28,7 @@ export class UsersService {
       .where(eq(users.id, userId));
   }
   async findByIdWithRefreshToken(
-    id: number,
+    id: string,
   ) {
     const [user] = await db
       .select()
@@ -38,7 +38,7 @@ export class UsersService {
     return user;
   }
   async updateRole(
-  userId: number,
+  userId: string,
   role: UserRole,
 ) {
   const [user] = await db

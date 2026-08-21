@@ -7,7 +7,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from './enums/user-role.enum';
 import { UpdateRoleDto } from './dto/update-role.dto';
-import { Param, ParseIntPipe } from '@nestjs/common';
+import { Param, ParseUUIDPipe } from '@nestjs/common';
 
 
 @Controller('users')
@@ -57,7 +57,7 @@ constructor(private readonly usersService: UsersService,) {}
   description: 'Acceso denegado',
 })
 updateRole(
-  @Param('id', ParseIntPipe) id: number,
+  @Param('id', ParseUUIDPipe) id: string,
   @Body() updateRoleDto: UpdateRoleDto,
 ) {
   return this.usersService.updateRole(

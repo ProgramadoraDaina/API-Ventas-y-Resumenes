@@ -57,6 +57,13 @@
       "when": 1787320451724,
       "tag": "0007_odd_garia",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1787345564901,
+      "tag": "0008_icy_phantom_reporter",
+      "breakpoints": true
     }
   ]
 }

@@ -1,13 +1,27 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-
-import { SwaggerModule, DocumentBuilder,} from '@nestjs/swagger';
-
+import { ConfigService } from '@nestjs/config';
+import { SwaggerModule, DocumentBuilder, } from '@nestjs/swagger';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  
+  app.useGlobalFilters(
+    new AllExceptionsFilter(),
+  );
+  const configService =
+    app.get(ConfigService);
+
+  app.enableCors({
+    origin: configService.get<string>(
+      'CORS_ORIGIN',
+    ),
+    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+    credentials: true,
+  });
 
   app.use(
     helmet({
@@ -37,7 +51,10 @@ async function bootstrap() {
 
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(process.env.PORT ?? 3001);
+  const port =
+    configService.get<number>('PORT') ?? 3001;
+
+  await app.listen(port);
 }
 
 bootstrap();

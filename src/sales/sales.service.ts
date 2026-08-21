@@ -109,7 +109,7 @@ export class SalesService {
                                                 pagina deseada*/
     }
 
-    async findOne(id: number, user: AuthUser,) {
+    async findOne(id: string, user: AuthUser,) {
         const [sale] = await db
             .select()
             .from(sales)
@@ -129,7 +129,7 @@ export class SalesService {
         return sale;
     }
 
-    async update(id: number, updateSaleDto: UpdateSaleDto, user: AuthUser,) {
+    async update(id: string, updateSaleDto: UpdateSaleDto, user: AuthUser,) {
         await this.findOne(id, user);
 
         const [sale] = await db
@@ -141,7 +141,7 @@ export class SalesService {
         return sale;
     }
 
-    async remove(id: number, user: AuthUser,) {
+    async remove(id: string, user: AuthUser,) {
         await this.findOne(id, user);
 
         const [sale] = await db
@@ -153,7 +153,7 @@ export class SalesService {
     }
     private validateEmployeeAccess(
         saleDate: Date,
-        saleCreatedBy: number,
+        saleCreatedBy: string,
         user: AuthUser,
         message: string,) {
         if (user.role !== UserRole.EMPLOYEE) {

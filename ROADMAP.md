@@ -12,8 +12,9 @@
 
 ### Seguridad
 
-- Refresh Tokens.
 - Recuperación de contraseña mediante correo electrónico.
+- Verificación de correo electrónico.
+- Autenticación multifactor (MFA).
 
 ### Infraestructura
 

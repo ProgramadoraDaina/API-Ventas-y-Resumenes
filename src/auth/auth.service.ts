@@ -86,7 +86,7 @@ export class AuthService {
     return tokens;
   }
   private async generarTokens(
-    userId: number,
+    userId: string,
     email: string,
     role: string,
   ) {
@@ -150,7 +150,7 @@ export class AuthService {
     ) as JwtSignOptions['expiresIn'];
   }
   async refresh(
-    userId: number,
+    userId: string,
     refreshToken: string,
   ) {
     const user =
@@ -187,7 +187,7 @@ export class AuthService {
       user.role,
     );
   }
-  async logout(userId: number) {
+  async logout(userId: string) {
     await this.usersService.updateRefreshToken(
       userId,
       null,

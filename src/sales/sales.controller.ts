@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Patch, Delete, Param, ParseIntPipe, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Patch, Delete, Param, ParseUUIDPipe, Query } from '@nestjs/common';
 import { AuthUser } from '../auth/interfaces/auth-user.interface';
 import { CreateSaleDto } from './dto/create-sale.dto';
 import { SalesService } from './sales.service';
@@ -65,7 +65,7 @@ export class SalesController {
         status: 404,
         description: 'Venta no encontrada',
     })
-    findOne(@Param('id', ParseIntPipe) id: number,
+    findOne(@Param('id', ParseUUIDPipe) id: string,
         @Request() req: { user: AuthUser },) {
         return this.salesService.findOne(
             id,
@@ -85,7 +85,7 @@ export class SalesController {
         status: 404,
         description: 'Venta no encontrada',
     })
-    update(@Param('id', ParseIntPipe) id: number, @Body() updateSaleDto: UpdateSaleDto,
+    update(@Param('id', ParseUUIDPipe) id: string, @Body() updateSaleDto: UpdateSaleDto,
         @Request() req: { user: AuthUser },) {
         return this.salesService.update(id, updateSaleDto, req.user);
     }
@@ -102,7 +102,7 @@ export class SalesController {
         status: 404,
         description: 'Venta no encontrada',
     })
-    remove(@Param('id', ParseIntPipe) id: number,
+    remove(@Param('id', ParseUUIDPipe) id: string,
         @Request() req: { user: AuthUser },) {
         return this.salesService.remove(id, req.user);
     }

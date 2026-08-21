@@ -37,6 +37,9 @@
   - `password`
   - `role`
   - `hashed_refresh_token`
+- UUID utilizado como clave primaria en users.
+- UUID utilizado como clave primaria en sales.
+- Relaciones mediante claves foráneas UUID.
 
 ### Índices
 
@@ -82,6 +85,10 @@
   - eliminación de propiedades no permitidas.
   - ordenamiento ascendente y descendente.
   - Documentación Swagger de DTOs.
+- Validación centralizada de variables de entorno.
+- Verificación de longitud mínima para JWT_SECRET.
+- Verificación de longitud mínima para JWT_REFRESH_SECRET.
+- Fail Fast ante configuraciones inválidas.
 
 ### Ventas
 
@@ -216,6 +223,11 @@ GET /sales?sort=desc
 - Los usuarios EMPLOYEE solo pueden consultar sus propias ventas del día actual.
 - Los usuarios EMPLOYEE solo pueden modificar sus propias ventas del día actual.
 - Los usuarios EMPLOYEE solo pueden eliminar sus propias ventas del día actual.
+- RefreshTokenGuard para validación de Refresh Tokens.
+- Global Exception Filter para manejo consistente de errores.
+- Validación de variables de entorno mediante ConfigModule.
+- UUID como identificadores públicos.
+- ParseUUIDPipe para validación de identificadores.
 
 ### Reportes
 
@@ -255,6 +267,11 @@ Ejemplo:
 - Manejo de accesos sin permisos.
 - Manejo de datos inválidos.
 - Respuestas HTTP descriptivas.
+- Global Exception Filter.
+- Respuestas de error unificadas.
+- Inclusión de timestamp en errores.
+- Inclusión de método HTTP y path en errores.
+- Manejo centralizado de excepciones.
 
 Implementado en:
 
@@ -296,8 +313,6 @@ GET /api
 - Inserción de usuarios.
 - Consulta de usuarios por correo electrónico.
 - Uso de `eq()` para búsquedas por ID y filtros.
-- Uso de `gte()` para filtros de fecha inicial.
-- Uso de `lte()` para filtros de fecha final.
 - Uso de `and()` para combinación dinámica de filtros.
 - Uso de `returning()`.
 - Uso de consultas SQL mediante `sql`.
@@ -312,7 +327,12 @@ GET /api
 
 - DTOs.
 - ValidationPipe.
-- ParseIntPipe.
+- UUID.
+- ParseUUIDPipe.
+- Exception Filters.
+- Environment Validation.
+- RefreshTokenGuard.
+- Refresh Token Rotation.
 - PartialType.
 - Inyección de dependencias.
 - CRUD con Drizzle ORM.
@@ -349,9 +369,6 @@ GET /api
 - SetMetadata.
 - Reflector.
 - Registro de usuarios.
-- Refresh Tokens.
-- Refresh Token Rotation.
-- Role Based Access Control (RBAC).
 - Gestión de roles de usuarios.
 - Ordenamiento de resultados.
 - Uso de `ORDER BY`.
@@ -404,6 +421,7 @@ GET /api
 - Tests unitarios para:
   - JwtStrategy.
   - RolesGuard.
+  - RefreshTokenGuard.
 - Tests E2E implementados mediante Supertest.
 - Validación de autenticación JWT.
 - Validación de endpoints protegidos.
@@ -417,19 +435,25 @@ GET /api
 
 #### Resultado actual
 
-- ✅ 10 suites de pruebas.
-- ✅ 48 tests unitarios pasando.
+- ✅ 11 suites de pruebas.
+- ✅ 46 tests pasando.
 - ✅ 0 tests fallando.
-- ✅ Cobertura de statements: 73.23%.
-- ✅ Cobertura de branches: 66.66%.
-- ✅ Cobertura de funciones: 82.22%.
-- ✅ Cobertura de líneas: 75%.
+- ✅ Cobertura de statements: 65.90%.
+- ✅ Cobertura de branches: 57.14%.
+- ✅ Cobertura de funciones: 70.17%.
+- ✅ Cobertura de líneas: 65.75%.
+- ✅ UUID implementado en usuarios y ventas.
+- ✅ RefreshTokenGuard implementado y testeado.
+- ✅ Global Exception Filter implementado.
+- ✅ Validación centralizada de variables de entorno.
+- ✅ Refresh Token Rotation implementada.
+- ✅ Helmet configurado.
+- ✅ Rate Limiting implementado.
 - ✅ Implementación completa de Refresh Tokens.
 - ✅ Rotación automática de Refresh Tokens.
 - ✅ Logout seguro.
 - ✅ Persistencia de sesiones mediante PostgreSQL.
 - ✅ Hasheo de Refresh Tokens con SHA-256 + bcrypt.
-- ✅ Helmet configurado.
 - ✅ Rate Limiting global implementado mediante Throttler.
 - ✅ Protección contra ataques de fuerza bruta.
 - ✅ Tests E2E de Rate Limiting pasando correctamente.
