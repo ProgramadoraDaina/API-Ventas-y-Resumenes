@@ -11,17 +11,18 @@ src/
 │   │   └── roles.decorator.ts
 │   │
 │   ├── dto/
-│   │   └── login.dto.ts
+│   │   ├── login.dto.ts
+│   │   └── refresh-token.dto.ts
 │   │
 │   ├── guards/
 │   │   ├── jwt-auth.guard.ts
 │   │   └── roles.guard.ts
 │   │
 │   ├── interfaces/
-│   │   └── auth-user.interface.ts
+│   │   ├── auth-user.interface.ts
+│   │   └── jwt-payload.interface.ts
 │   │
 │   ├── strategies/
-│   │   │
 │   │   ├── jwt.strategy.ts
 │   │   └── jwt.strategy.spec.ts
 │   │

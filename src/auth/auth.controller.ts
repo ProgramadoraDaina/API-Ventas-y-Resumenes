@@ -7,7 +7,7 @@ import { JwtAuthGuard, } from './guards/jwt-auth.guard';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
-
+import { Throttle } from '@nestjs/throttler';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
@@ -16,6 +16,16 @@ export class AuthController {
     private readonly configService: ConfigService,) { }
 
   @Post('login')
+  @Throttle({
+    default: {
+      limit: 5,
+      ttl: 60000,
+    },
+  })
+  @ApiResponse({
+    status: 429,
+    description: 'Demasiadas solicitudes. Intente nuevamente más tarde.',
+  })
   @ApiOperation({
     summary: 'Iniciar sesión',
   })
@@ -41,6 +51,12 @@ export class AuthController {
   }
 
   @Post('refresh')
+  @Throttle({
+    default: {
+      limit: 20,
+      ttl: 60000,
+    },
+  })
   @ApiOperation({
     summary: 'Renovar access token',
   })

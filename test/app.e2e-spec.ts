@@ -51,4 +51,35 @@ describe('Auth (e2e)', () => {
       })
       .expect(401);
   });
+  it('/auth/login (POST) debe bloquear el exceso de intentos', async () => {
+  for (let i = 0; i < 5; i++) {
+    await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({
+        email: 'fake@test.com',
+        password: '123456',
+      });
+  }
+
+  const response = await request(
+    app.getHttpServer(),
+  )
+    .post('/auth/login')
+    .send({
+      email: 'fake@test.com',
+      password: '123456',
+    });
+
+  expect(response.status).toBe(429);
+
+  expect(response.body).toHaveProperty(
+    'statusCode',
+    429,
+  );
+
+  expect(response.body).toHaveProperty(
+    'error',
+    'Too Many Requests',
+  );
+});
 });

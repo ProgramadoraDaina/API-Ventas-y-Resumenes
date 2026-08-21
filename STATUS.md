@@ -198,6 +198,11 @@ GET /sales?sort=desc
 - Invalidación automática de sesión ante uso de Refresh Token inválido.
 - Rotación automática de Refresh Tokens.
 - Logout seguro mediante eliminación del Refresh Token persistido.
+- Helmet para protección mediante HTTP Security Headers.
+- Rate Limiting mediante @nestjs/throttler.
+- Protección contra ataques de fuerza bruta.
+- Limitación de solicitudes por IP.
+- Protección específica de los endpoints `/auth/login` y `/auth/refresh`.
 
 ### Reportes
 
@@ -361,6 +366,10 @@ GET /api
 - ConfigModule.
 - ConfigService.
 - Variables de entorno centralizadas.
+- Helmet.
+- HTTP Security Headers.
+- Rate Limiting.
+- ThrottlerGuard.
 
 ### Testing
 
@@ -385,6 +394,7 @@ GET /api
 - Validación de autorización basada en roles.
 - Validación de reportes.
 - Validación de operaciones CRUD.
+- Validación de Rate Limiting mediante pruebas E2E.
 
 #### Resultado actual
 
@@ -400,6 +410,10 @@ GET /api
 - ✅ Logout seguro.
 - ✅ Persistencia de sesiones mediante PostgreSQL.
 - ✅ Hasheo de Refresh Tokens con SHA-256 + bcrypt.
+- ✅ Helmet configurado.
+- ✅ Rate Limiting global implementado mediante Throttler.
+- ✅ Protección contra ataques de fuerza bruta.
+- ✅ Tests E2E de Rate Limiting pasando correctamente.
 
 ### Control de acceso (RBAC)
 
