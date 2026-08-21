@@ -15,6 +15,25 @@ export const userRoleEnum = pgEnum('user_role', [
   'customer',
 ])
 
+export const products = pgTable('products', {
+  id: uuid('id')
+    .defaultRandom()
+    .primaryKey(),
+
+  name: varchar('name', {
+    length: 100,
+  }).notNull(),
+
+  price: integer('price').notNull(),
+
+  stock: integer('stock')
+    .notNull(),
+
+  createdAt: timestamp('created_at')
+    .defaultNow()
+    .notNull(),
+});
+
 export const sales = pgTable(
   'sales',
   {
@@ -22,8 +41,14 @@ export const sales = pgTable(
       .defaultRandom()
       .primaryKey(),
 
-    totalAmount: integer('total_amount')
+    productId: uuid('product_id')
+      .references(() => products.id)
       .notNull(),
+
+    quantity: integer('quantity')
+      .notNull(),
+
+    totalAmount: integer('total_amount').notNull(),
 
     paymentMethod: paymentMethodEnum(
       'payment_method',
@@ -56,6 +81,10 @@ export const sales = pgTable(
     createdByIdx: index(
       'sales_created_by_idx',
     ).on(table.createdBy),
+
+    productIdIdx: index(
+      'sales_product_id_idx',
+    ).on(table.productId),
   })
 );
 

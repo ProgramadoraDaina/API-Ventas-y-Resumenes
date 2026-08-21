@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, ForbiddenException, } from '@nestjs/common';
 import { AuthUser } from '../auth/interfaces/auth-user.interface';
 import { db } from '../database/drizzle';
-import { sales } from '../database/schema';
+import { sales, products } from '../database/schema';
 import { CreateSaleDto } from './dto/create-sale.dto';
 import { eq, gte, lt, and, SQL, asc, desc, } from 'drizzle-orm';
 import { UpdateSaleDto } from './dto/update-sale.dto';
@@ -10,15 +10,59 @@ import { UserRole } from '../users/enums/user-role.enum';
 
 @Injectable()
 export class SalesService {
-    async create(createSaleDto: CreateSaleDto, user: AuthUser) {
+    async create(
+        createSaleDto: CreateSaleDto,
+        user: AuthUser,
+    ) {
+        const [product] = await db
+            .select()
+            .from(products)
+            .where(
+                eq(
+                    products.id,
+                    createSaleDto.productId,
+                ),
+            );
+
+        if (!product) {
+            throw new NotFoundException(
+                'Producto no encontrado',
+            );
+        }
+
+        if (
+            product.stock <
+            createSaleDto.quantity
+        ) {
+            throw new ForbiddenException(
+                'Stock insuficiente',
+            );
+        }
+
+        const totalAmount =
+            Number(product.price) *
+            createSaleDto.quantity;
+
         const [sale] = await db
             .insert(sales)
             .values({
-                totalAmount: createSaleDto.totalAmount,
-                paymentMethod: createSaleDto.paymentMethod,
+                productId: createSaleDto.productId,
+                quantity: createSaleDto.quantity,
+                totalAmount,
+                paymentMethod:
+                    createSaleDto.paymentMethod,
                 createdBy: user.id,
             })
             .returning();
+
+        await db
+            .update(products)
+            .set({
+                stock:
+                    product.stock -
+                    createSaleDto.quantity,
+            })
+            .where(eq(products.id, product.id));
 
         return sale;
     }

@@ -36,17 +36,35 @@ describe('SalesService', () => {
   });
 
  it('debería crear una venta', async () => {
+  const productId = 'c7f5f0a9-123c-4321-abcd-c0f43e1362f4';
+  const productMock = {
+    id: productId,
+    name: 'Lomo Saltado',
+    price: 1250,
+    stock: 10,
+    createdAt: new Date(),
+  };
+
   const createSaleDto = {
-    totalAmount: 2500,
+    productId,
+    quantity: 2,
     paymentMethod: PaymentMethod.CASH,
   };
 
   const saleMock = {
-    id: 1,
+    id: 'sale-0000-1111-2222',
+    productId,
+    quantity: 2,
     totalAmount: 2500,
     paymentMethod: PaymentMethod.CASH,
     createdAt: new Date(),
   };
+
+  (db.select as jest.Mock).mockReturnValue({
+    from: () => ({
+      where: async () => [productMock],
+    }),
+  });
 
   (db.insert as jest.Mock).mockReturnValue({
     values: () => ({
@@ -54,8 +72,14 @@ describe('SalesService', () => {
     }),
   });
 
+  (db.update as jest.Mock).mockReturnValue({
+    set: () => ({
+      where: jest.fn(),
+    }),
+  });
+
   const user = {
-    id: 1,
+    id: '11112222-3333-4444-5555-666677778888',
     role: UserRole.ADMIN,
     email: 'admin@test.com',
   };
