@@ -6,18 +6,18 @@ import { sql, and, gte, lt } from 'drizzle-orm';
 @Injectable()
 export class ReportsService {
     async getDailyReport() {
-        const today = new Date();/*obtiene la fecha y hora actual*/
+        const _today = new Date();/*obtiene la fecha y hora actual*/
 
-        const startOfDay = new Date(
-            today.getFullYear(),
-            today.getMonth(),
-            today.getDate(),
+        const _startOfDay = new Date(
+            _today.getFullYear(),
+            _today.getMonth(),
+            _today.getDate(),
         );
 
-        const endOfDay = new Date(
-            today.getFullYear(),
-            today.getMonth(),
-            today.getDate() + 1,
+        const _endOfDay = new Date(
+            _today.getFullYear(),
+            _today.getMonth(),
+            _today.getDate() + 1,
         );
 
         return db
@@ -25,23 +25,23 @@ export class ReportsService {
             .from(sales)
             .where(
                 and(
-                    gte(sales.createdAt, startOfDay),
-                    lt(sales.createdAt, endOfDay),
+                    gte(sales.createdAt, _startOfDay),
+                    lt(sales.createdAt, _endOfDay),
                 ),
             );
     }
     async getMonthlyReport() {
-        const today = new Date();
+        const _today = new Date();
 
-        const startOfMonth = new Date(
-            today.getFullYear(),
-            today.getMonth(),
+        const _startOfMonth = new Date(
+            _today.getFullYear(),
+            _today.getMonth(),
             1,
         );
 
-        const startOfNextMonth = new Date(
-            today.getFullYear(),
-            today.getMonth() + 1,
+        const _startOfNextMonth = new Date(
+            _today.getFullYear(),
+            _today.getMonth() + 1,
             1,
         );
 
@@ -53,41 +53,41 @@ export class ReportsService {
             .from(sales)
             .where(
                 and(
-                    gte(sales.createdAt, startOfMonth),
-                    lt(sales.createdAt, startOfNextMonth),
+                    gte(sales.createdAt, _startOfMonth),
+                    lt(sales.createdAt, _startOfNextMonth),
                 ),
             )
             .groupBy(sql`DATE(${sales.createdAt})`)
             .orderBy(sql`DATE(${sales.createdAt})`);
     }
     async getDashboard() {
-        const today = new Date();
+        const _today = new Date();
 
-        const startOfDay = new Date(
-            today.getFullYear(),
-            today.getMonth(),
-            today.getDate(),
+        const _startOfDay = new Date(
+            _today.getFullYear(),
+            _today.getMonth(),
+            _today.getDate(),
         );
 
-        const endOfDay = new Date(
-            today.getFullYear(),
-            today.getMonth(),
-            today.getDate() + 1,
+        const _endOfDay = new Date(
+            _today.getFullYear(),
+            _today.getMonth(),
+            _today.getDate() + 1,
         );
 
-        const startOfMonth = new Date(
-            today.getFullYear(),
-            today.getMonth(),
+        const _startOfMonth = new Date(
+            _today.getFullYear(),
+            _today.getMonth(),
             1,
         );
 
-        const startOfNextMonth = new Date(
-            today.getFullYear(),
-            today.getMonth() + 1,
+        const _startOfNextMonth = new Date(
+            _today.getFullYear(),
+            _today.getMonth() + 1,
             1,
         );
 
-        const [dailyStats] = await db
+        const [_dailyStats] = await db
             .select({
                 todaySales: sql<number>`COUNT(*)`,
                 todayTotal: sql<number>`COALESCE(SUM(${sales.totalAmount}), 0)`,
@@ -95,12 +95,12 @@ export class ReportsService {
             .from(sales)
             .where(
                 and(
-                    gte(sales.createdAt, startOfDay),
-                    lt(sales.createdAt, endOfDay),
+                    gte(sales.createdAt, _startOfDay),
+                    lt(sales.createdAt, _endOfDay),
                 ),
             );
 
-        const [monthlyStats] = await db
+        const [_monthlyStats] = await db
             .select({
                 monthSales: sql<number>`COUNT(*)`,
                 monthTotal: sql<number>`COALESCE(SUM(${sales.totalAmount}), 0)`,
@@ -108,17 +108,17 @@ export class ReportsService {
             .from(sales)
             .where(
                 and(
-                    gte(sales.createdAt, startOfMonth),
-                    lt(sales.createdAt, startOfNextMonth),
+                    gte(sales.createdAt, _startOfMonth),
+                    lt(sales.createdAt, _startOfNextMonth),
                 ),
             );
 
         return {
-            todaySales: Number(dailyStats.todaySales),
-            todayTotal: Number(dailyStats.todayTotal),
+            todaySales: Number(_dailyStats.todaySales),
+            todayTotal: Number(_dailyStats.todayTotal),
 
-            monthSales: Number(monthlyStats.monthSales),
-            monthTotal: Number(monthlyStats.monthTotal),
+            monthSales: Number(_monthlyStats.monthSales),
+            monthTotal: Number(_monthlyStats.monthTotal),
         };
     }
 }

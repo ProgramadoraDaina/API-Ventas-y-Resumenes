@@ -9,26 +9,26 @@ import { eq } from 'drizzle-orm';
 export class UsersService {
   async create(createUserDto: CreateUserDto) {
 
-    const existingUser =
+    const _existingUser =
       await this.findByEmail(
         createUserDto.email,
       );
 
-    if (existingUser) {
+    if (_existingUser) {
       throw new BadRequestException(
         'Ya existe un usuario con ese email',
       );
     }
 
-    const username =
+    const _username =
       createUserDto.email.split('@')[0];
 
-    const temporaryPassword =
-      `${username}123`;
+    const _temporaryPassword =
+      `${_username}123`;
 
-    const hashedPassword =
+    const _hashedPassword =
       await bcrypt.hash(
-        temporaryPassword,
+        _temporaryPassword,
         10,
       );
     const [user] = await db
@@ -36,7 +36,7 @@ export class UsersService {
       .values({
         name: createUserDto.name,
         email: createUserDto.email,
-        password: hashedPassword,
+        password: _hashedPassword,
         role: createUserDto.role,
         mustChangePassword: true,
       })
@@ -47,7 +47,7 @@ export class UsersService {
       name: user.name,
       email: user.email,
       role: user.role,
-      temporaryPassword,
+      temporaryPassword: _temporaryPassword,
     };
   }
 
@@ -71,24 +71,24 @@ export class UsersService {
         'Usuario no encontrado',
       );
     }
-    const passwordMatch = await bcrypt.compare(
+    const _passwordMatch = await bcrypt.compare(
       currentPassword,
       user.password,);
 
-    if (!passwordMatch) {
+    if (!_passwordMatch) {
       throw new BadRequestException(
         'La contraseña actual es incorrecta',
       );
     }
 
-    const hashedPassword = await bcrypt.hash(
+    const _hashedPassword = await bcrypt.hash(
       newPassword,
       10,
     );
 
     await db.update(users)
       .set({
-        password: hashedPassword,
+        password: _hashedPassword,
         mustChangePassword: false,
       })
       .where(eq(users.id, userId));
@@ -96,4 +96,25 @@ export class UsersService {
       message: 'Contraseña actualizada correctamente',
     };
   }
+  async updateRefreshToken(
+  userId: number,
+  hashedRefreshToken: string | null,
+) {
+  await db
+    .update(users)
+    .set({
+      hashedRefreshToken,
+    })
+    .where(eq(users.id, userId));
+}
+async findByIdWithRefreshToken(
+  id: number,
+) {
+  const [user] = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, id));
+
+  return user;
+}
 }

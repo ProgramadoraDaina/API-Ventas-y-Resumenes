@@ -10,6 +10,15 @@
 - Drizzle ORM configurado.
 - Drizzle Kit configurado.
 - Migraciones generadas y ejecutadas correctamente.
+- Connection Pooling configurado mediante pg.Pool.
+- Índices PostgreSQL configurados para optimización de consultas.
+
+### Optimización de rendimiento
+
+- Connection Pooling mediante `pg.Pool`.
+- Reutilización de conexiones para mejorar concurrencia y escalabilidad.
+- Índice `sales_created_at_idx` para optimizar consultas por fecha.
+- Índice compuesto `sales_payment_created_idx` para optimizar filtros por método de pago y rangos de fechas.
 
 ### Esquema
 
@@ -27,6 +36,12 @@
   - `password`
   - `role`
   - `must_change_password`
+  - `hashed_refresh_token`
+
+### Índices
+
+- Índice `sales_created_at_idx`.
+- Índice compuesto `sales_payment_created_idx`.
 
 ### NestJS
 
@@ -132,6 +147,20 @@ GET /sales?sort=desc
   - GET `/users/profile`
 - Inclusión del rol dentro del JWT.
 - Inclusión del indicador `mustChangePassword` en la respuesta de login.
+- POST `/auth/refresh`
+  - Renovación de sesión mediante Refresh Token.
+  - Generación automática de nuevo Access Token.
+  - Rotación automática de Refresh Tokens.
+  - Validación de Refresh Token almacenado en base de datos.
+
+- POST `/auth/logout`
+  - Cierre de sesión seguro.
+  - Invalidación del Refresh Token almacenado.
+- Implementación de Access Tokens y Refresh Tokens.
+- Configuración independiente de expiración para Access Token y Refresh Token.
+- Configuración de secretos independientes para Access Token y Refresh Token.
+- Rotación automática de Refresh Tokens.
+- Persistencia de Refresh Tokens en PostgreSQL.
 
 ### Seguridad
 
@@ -160,6 +189,15 @@ GET /sales?sort=desc
 - Eliminación automática de propiedades no permitidas (`whitelist`).
 - Bloqueo de propiedades no permitidas (`forbidNonWhitelisted`).
 - Transformación automática de tipos (`transform`).
+- Hash de Refresh Tokens mediante bcrypt.
+- Resumen SHA-256 previo al hash de Refresh Tokens.
+- Almacenamiento seguro de Refresh Tokens resumidos y hasheados.
+- Secret independiente para Access Token (`JWT_SECRET`).
+- Secret independiente para Refresh Token (`JWT_REFRESH_SECRET`).
+- Detección de reutilización de Refresh Tokens.
+- Invalidación automática de sesión ante uso de Refresh Token inválido.
+- Rotación automática de Refresh Tokens.
+- Logout seguro mediante eliminación del Refresh Token persistido.
 
 ### Reportes
 
@@ -311,6 +349,18 @@ GET /api
 - Supertest.
 - Mocking con Jest.
 - Cobertura de código.
+- Connection Pooling con pg.Pool.
+- Optimización de consultas mediante índices.
+- PostgreSQL Indexes.
+- Refresh Tokens.
+- Token Rotation.
+- Session Management.
+- Refresh Token Hashing.
+- SHA-256.
+- Node Crypto.
+- ConfigModule.
+- ConfigService.
+- Variables de entorno centralizadas.
 
 ### Testing
 
@@ -339,12 +389,17 @@ GET /api
 #### Resultado actual
 
 - ✅ 10 suites de pruebas.
-- ✅ 46 tests unitarios pasando.
+- ✅ 48 tests unitarios pasando.
 - ✅ 0 tests fallando.
 - ✅ Cobertura de statements: 73.23%.
 - ✅ Cobertura de branches: 66.66%.
 - ✅ Cobertura de funciones: 82.22%.
 - ✅ Cobertura de líneas: 75%.
+- ✅ Implementación completa de Refresh Tokens.
+- ✅ Rotación automática de Refresh Tokens.
+- ✅ Logout seguro.
+- ✅ Persistencia de sesiones mediante PostgreSQL.
+- ✅ Hasheo de Refresh Tokens con SHA-256 + bcrypt.
 
 ### Control de acceso (RBAC)
 
@@ -383,5 +438,11 @@ GET /api
 - GET `/reports/daily`
 - GET `/reports/monthly`
 - GET `/reports/dashboard`
+
+### Endpoints de autenticación
+
+- POST `/auth/login`
+- POST `/auth/refresh`
+- POST `/auth/logout`
 
 Probados mediante Swagger/OpenAPI utilizando autenticación Bearer Token.

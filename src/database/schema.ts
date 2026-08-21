@@ -1,4 +1,4 @@
-import { integer, pgEnum, pgTable, serial, timestamp, varchar, boolean, index } from 'drizzle-orm/pg-core';
+import { integer, pgEnum, pgTable, serial, timestamp, varchar, boolean, index, text } from 'drizzle-orm/pg-core';
 
 export const paymentMethodEnum = pgEnum('payment_method',
   [
@@ -69,4 +69,6 @@ export const users = pgTable('users', { /**tabla usuarios*/
   mustChangePassword: boolean('must_change_password')
     .default(true)
     .notNull(),
+
+    hashedRefreshToken: text('hashed_refresh_token'),
 });

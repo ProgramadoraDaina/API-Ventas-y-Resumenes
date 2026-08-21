@@ -30,6 +30,8 @@ El objetivo es construir una API REST para la gestión de ventas que permita:
 - Reportes diarios y mensuales.
 - Manejo de excepciones.
 - Documentación interactiva mediante Swagger/OpenAPI.
+- Connection Pooling mediante pg.Pool.
+- Optimización de consultas mediante índices PostgreSQL.
 
 > Los usuarios no envían contraseña durante el registro. El sistema genera automáticamente una contraseña temporal y obliga a cambiarla en el primer acceso.
 
@@ -45,6 +47,13 @@ El objetivo es construir una API REST para la gestión de ventas que permita:
 ### Base de datos
 
 - PostgreSQL
+
+### Acceso a datos
+
+- Drizzle ORM
+- Drizzle Kit
+- pg (Node PostgreSQL)
+- Connection Pooling con pg.Pool
 
 ### ORM
 
@@ -62,6 +71,14 @@ El objetivo es construir una API REST para la gestión de ventas que permita:
 - Passport
 - Passport JWT
 - bcrypt
+
+## Optimización de rendimiento
+
+La aplicación incorpora optimizaciones para mejorar la escalabilidad y el rendimiento de las consultas:
+
+- Connection Pooling mediante `pg.Pool`.
+- Índice sobre `created_at` para optimizar reportes diarios y mensuales.
+- Índice compuesto sobre (`payment_method`, `created_at`) para optimizar filtros por método de pago y rangos de fechas.
 
 ### Documentación
 

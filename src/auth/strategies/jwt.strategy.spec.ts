@@ -1,13 +1,20 @@
+import { ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './jwt.strategy';
+import { UserRole } from '../../users/enums/user-role.enum';
 
 describe('JwtStrategy', () => {
   let strategy: JwtStrategy;
 
   beforeEach(() => {
-    process.env.JWT_SECRET =
-      'test-secret';
+    const configService = {
+      get: jest.fn().mockReturnValue(
+        'test-secret',
+      ),
+    } as unknown as ConfigService;
 
-    strategy = new JwtStrategy();
+    strategy = new JwtStrategy(
+      configService,
+    );
   });
 
   it('debe estar definida', () => {
@@ -18,7 +25,7 @@ describe('JwtStrategy', () => {
     const payload = {
       sub: 1,
       email: 'admin@test.com',
-      role: 'admin',
+      role: UserRole.ADMIN,
     };
 
     const result =
@@ -27,7 +34,7 @@ describe('JwtStrategy', () => {
     expect(result).toEqual({
       id: 1,
       email: 'admin@test.com',
-      role: 'admin',
+      role: UserRole.ADMIN,
     });
   });
 });

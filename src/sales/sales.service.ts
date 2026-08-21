@@ -30,41 +30,41 @@ export class SalesService {
             );
         }
 
-        const page = querySaleDto.page ?? 1;/*si no recibe page usa 1*/
-        const limit = querySaleDto.limit ?? 10;
+        const _page = querySaleDto.page ?? 1;/*si no recibe page usa 1*/
+        const _limit = querySaleDto.limit ?? 10;
 
-        const orderByClause =
+        const _orderByClause =
             querySaleDto.sort === 'asc'
                 ? asc(sales.createdAt)
                 : desc(sales.createdAt);
 
-        const conditions: SQL[] = [];
+        const _conditions: SQL[] = [];
 
         if (user.role === UserRole.EMPLOYEE) {
-            const today = new Date();
+            const _today = new Date();
 
-            const startOfDay = new Date(
-                today.getFullYear(),
-                today.getMonth(),
-                today.getDate(),
+            const _startOfDay = new Date(
+                _today.getFullYear(),
+                _today.getMonth(),
+                _today.getDate(),
             );
 
-            const endOfDay = new Date(
-                today.getFullYear(),
-                today.getMonth(),
-                today.getDate() + 1,
+            const _endOfDay = new Date(
+                _today.getFullYear(),
+                _today.getMonth(),
+                _today.getDate() + 1,
             );
 
-            conditions.push(
-                gte(sales.createdAt, startOfDay),
+            _conditions.push(
+                gte(sales.createdAt, _startOfDay),
             );
 
-            conditions.push(
-                lte(sales.createdAt, endOfDay),
+            _conditions.push(
+                lte(sales.createdAt, _endOfDay),
             );
         }
         if (querySaleDto.paymentMethod) {/*si recibe un metodo de pago, filtra las que tenga ese metodo de pago*/
-            conditions.push(eq(
+            _conditions.push(eq(
                 sales.paymentMethod,
                 querySaleDto.paymentMethod,
             ),
@@ -73,7 +73,7 @@ export class SalesService {
 
         if (querySaleDto.startDate) {/*si recibe una fecha de inicio filtra las ventas que si son mayor  
                                        o igual a la fecha*/
-            conditions.push(gte(
+            _conditions.push(gte(
                 sales.createdAt,
                 new Date(querySaleDto.startDate),
             ),
@@ -81,27 +81,27 @@ export class SalesService {
         }
 
         if (querySaleDto.endDate) {/*si recibe una fecha de fin filtra por las ventas previas o iguales*/
-            conditions.push(lte(
+            _conditions.push(lte(
                 sales.createdAt,
                 new Date(querySaleDto.endDate),
             ),
             );
         }
-        if (conditions.length > 0) { /*si existen filtros, aplica todas las condiciones*/
+        if (_conditions.length > 0) { /*si existen filtros, aplica todas las condiciones*/
             return db
                 .select()
                 .from(sales)
-                .where(and(...conditions))
-                .orderBy(orderByClause)
-                .limit(limit)
-                .offset((page - 1) * limit);
+                .where(and(..._conditions))
+                .orderBy(_orderByClause)
+                .limit(_limit)
+                .offset((_page - 1) * _limit);
         }
         return db       /*retorna las primeras ventas*/
             .select()
             .from(sales)
-            .orderBy(orderByClause)
-            .limit(limit)
-            .offset((page - 1) * limit);/*saltea la cantidad de ventas necesaria para llegar a la
+            .orderBy(_orderByClause)
+            .limit(_limit)
+            .offset((_page - 1) * _limit);/*saltea la cantidad de ventas necesaria para llegar a la
                                                 pagina deseada*/
     }
 
@@ -155,14 +155,14 @@ export class SalesService {
             return;
         }
 
-        const today = new Date();
+        const _today = new Date();
 
-        const sameDay =
-            saleDate.getDate() === today.getDate() &&
-            saleDate.getMonth() === today.getMonth() &&
-            saleDate.getFullYear() === today.getFullYear();
+        const _sameDay =
+            saleDate.getDate() === _today.getDate() &&
+            saleDate.getMonth() === _today.getMonth() &&
+            saleDate.getFullYear() === _today.getFullYear();
 
-        if (!sameDay) {
+        if (!_sameDay) {
             throw new ForbiddenException(message);
         }
     }

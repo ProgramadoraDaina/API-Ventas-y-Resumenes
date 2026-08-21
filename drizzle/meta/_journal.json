@@ -36,6 +36,13 @@
       "when": 1787191558105,
       "tag": "0004_tan_tarantula",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1787267127919,
+      "tag": "0005_smooth_ulik",
+      "breakpoints": true
     }
   ]
 }

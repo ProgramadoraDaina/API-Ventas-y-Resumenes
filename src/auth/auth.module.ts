@@ -2,21 +2,14 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { UsersModule } from '../users/users.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [
-    UsersModule,
-    JwtModule.register({ /*aqui se configura el módulo JWT*/
-      secret: process.env.JWT_SECRET, /*cambie la firma por seguridad*/
-      signOptions: { expiresIn: '1h' },
-    }),
-  ],
+  imports: [UsersModule,
+            JwtModule.register({}),],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    JwtStrategy,
-  ],
+  providers: [AuthService,
+              JwtStrategy,],
 })
-export class AuthModule { }
+export class AuthModule {}

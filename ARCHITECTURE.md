@@ -97,3 +97,12 @@ Los módulos principales son:
 - UsersModule: gestión de usuarios.
 - SalesModule: gestión de ventas.
 - ReportsModule: generación de reportes y métricas.
+
+### Capa de persistencia
+
+- PostgreSQL como motor de base de datos.
+- Drizzle ORM para acceso y manipulación de datos.
+- pg.Pool para gestión eficiente y reutilización de conexiones a la base de datos.
+- Connection Pooling configurado para mejorar concurrencia y escalabilidad.
+- Índice sobre `created_at` para optimizar consultas y reportes por fecha.
+- Índice compuesto sobre (`payment_method`, `created_at`) para acelerar filtros y búsquedas de ventas.
