@@ -3,19 +3,20 @@ import { AuthUser } from '../auth/interfaces/auth-user.interface';
 import { db } from '../database/drizzle';
 import { sales } from '../database/schema';
 import { CreateSaleDto } from './dto/create-sale.dto';
-import { eq, gte, lte, and, SQL, asc,desc, } from 'drizzle-orm';
+import { eq, gte, lt, and, SQL, asc, desc, } from 'drizzle-orm';
 import { UpdateSaleDto } from './dto/update-sale.dto';
 import { QuerySaleDto } from './dto/query-sale.dto';
 import { UserRole } from '../users/enums/user-role.enum';
 
 @Injectable()
 export class SalesService {
-    async create(createSaleDto: CreateSaleDto) {
+    async create(createSaleDto: CreateSaleDto, user: AuthUser) {
         const [sale] = await db
             .insert(sales)
             .values({
                 totalAmount: createSaleDto.totalAmount,
                 paymentMethod: createSaleDto.paymentMethod,
+                createdBy: user.id,
             })
             .returning();
 
@@ -60,7 +61,10 @@ export class SalesService {
             );
 
             _conditions.push(
-                lte(sales.createdAt, _endOfDay),
+                lt(sales.createdAt, _endOfDay)
+            );
+            _conditions.push(
+                eq(sales.createdBy, user.id),
             );
         }
         if (querySaleDto.paymentMethod) {/*si recibe un metodo de pago, filtra las que tenga ese metodo de pago*/
@@ -81,7 +85,7 @@ export class SalesService {
         }
 
         if (querySaleDto.endDate) {/*si recibe una fecha de fin filtra por las ventas previas o iguales*/
-            _conditions.push(lte(
+            _conditions.push(lt(
                 sales.createdAt,
                 new Date(querySaleDto.endDate),
             ),
@@ -113,11 +117,12 @@ export class SalesService {
 
         if (!sale) {
             throw new NotFoundException(
-                `Sale with id ${id} not found`,
+                `Venta con id ${id} no encontrada`,
             );
         }
         this.validateEmployeeAccess(
             sale.createdAt,
+            sale.createdBy,
             user,
             'No puedes consultar ventas de días anteriores',
         );
@@ -148,22 +153,28 @@ export class SalesService {
     }
     private validateEmployeeAccess(
         saleDate: Date,
+        saleCreatedBy: number,
         user: AuthUser,
-        message: string,
-    ) {
+        message: string,) {
         if (user.role !== UserRole.EMPLOYEE) {
             return;
         }
 
-        const _today = new Date();
+        const today = new Date();
 
-        const _sameDay =
-            saleDate.getDate() === _today.getDate() &&
-            saleDate.getMonth() === _today.getMonth() &&
-            saleDate.getFullYear() === _today.getFullYear();
+        const sameDay =
+            saleDate.getDate() === today.getDate() &&
+            saleDate.getMonth() === today.getMonth() &&
+            saleDate.getFullYear() === today.getFullYear();
 
-        if (!_sameDay) {
+        if (!sameDay) {
             throw new ForbiddenException(message);
+        }
+
+        if (saleCreatedBy !== user.id) {
+            throw new ForbiddenException(
+                'Esta venta no te pertenece',
+            );
         }
     }
 }

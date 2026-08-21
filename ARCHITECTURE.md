@@ -12,10 +12,12 @@ src/
 │   │
 │   ├── dto/
 │   │   ├── login.dto.ts
-│   │   └── refresh-token.dto.ts
+│   │   ├── refresh-token.dto.ts
+│   │   └── register.dto.ts
 │   │
 │   ├── guards/
 │   │   ├── jwt-auth.guard.ts
+│   │   ├── roles.guard.spec.ts
 │   │   └── roles.guard.ts
 │   │
 │   ├── interfaces/
@@ -63,8 +65,7 @@ src/
 ├── users/
 │   │
 │   ├── dto/
-│   │   ├── create-user.dto.ts
-│   │   └── change-password.dto.ts
+│   │   └──update-role.dto.ts
 │   │
 │   ├── enums/
 │   │   └── user-role.enum.ts

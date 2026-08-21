@@ -1,36 +1,18 @@
-import { Body, Controller, Post, Get, Patch } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { Body, Controller, Get, Patch } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UseGuards, Request } from '@nestjs/common';
-import { RolesGuard } from '../auth/guards/roles.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
 import { ApiBearerAuth, ApiOperation, ApiResponse, } from '@nestjs/swagger';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from './enums/user-role.enum';
-import { ChangePasswordDto } from './dto/change-password.dto';
+import { UpdateRoleDto } from './dto/update-role.dto';
+import { Param, ParseIntPipe } from '@nestjs/common';
+
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService,) { }
-
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  @Post()
-  @ApiOperation({
-    summary: 'Crear un usuario',
-  })
-  @ApiResponse({
-    status: 201,
-    description: 'Usuario creado correctamente',
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Acceso denegado',
-  })
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
+constructor(private readonly usersService: UsersService,) {}
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
@@ -50,28 +32,37 @@ export class UsersController {
     return req.user;
   }
 
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  @Patch('change-password')
-  @ApiOperation({
-    summary: 'Cambiar contraseña',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Contraseña actualizada correctamente',
-  })
-  @ApiResponse({
-    status: 401,
-    description: 'Credenciales inválidas',
-  })
-  changePassword(
-    @Request() req,
-    @Body() changePasswordDto: ChangePasswordDto,
-  ) {
-    return this.usersService.changePassword(
-      req.user.id,
-      changePasswordDto.currentPassword,
-      changePasswordDto.newPassword,
-    );
-  }
+
+@ApiBearerAuth()
+@Roles(UserRole.ADMIN)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Patch(':id/role')
+@ApiOperation({
+  summary: 'Actualizar rol de un usuario',
+})
+@ApiResponse({
+  status: 200,
+  description: 'Rol actualizado correctamente',
+})
+@ApiResponse({
+  status: 400,
+  description: 'No se puede modificar el rol de otro administrador',
+})
+@ApiResponse({
+  status: 404,
+  description: 'Usuario no encontrado',
+})
+@ApiResponse({
+  status: 403,
+  description: 'Acceso denegado',
+})
+updateRole(
+  @Param('id', ParseIntPipe) id: number,
+  @Body() updateRoleDto: UpdateRoleDto,
+) {
+  return this.usersService.updateRole(
+    id,
+    updateRoleDto.role,
+  );
+}
 }

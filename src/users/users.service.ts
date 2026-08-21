@@ -1,56 +1,12 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
 import { db } from '../database/drizzle';
 import { users } from '../database/schema';
-import { CreateUserDto } from './dto/create-user.dto';
 import { eq } from 'drizzle-orm';
+import { UserRole } from './enums/user-role.enum';
 
 @Injectable()
 export class UsersService {
-  async create(createUserDto: CreateUserDto) {
-
-    const _existingUser =
-      await this.findByEmail(
-        createUserDto.email,
-      );
-
-    if (_existingUser) {
-      throw new BadRequestException(
-        'Ya existe un usuario con ese email',
-      );
-    }
-
-    const _username =
-      createUserDto.email.split('@')[0];
-
-    const _temporaryPassword =
-      `${_username}123`;
-
-    const _hashedPassword =
-      await bcrypt.hash(
-        _temporaryPassword,
-        10,
-      );
-    const [user] = await db
-      .insert(users)
-      .values({
-        name: createUserDto.name,
-        email: createUserDto.email,
-        password: _hashedPassword,
-        role: createUserDto.role,
-        mustChangePassword: true,
-      })
-      .returning();
-
-    return {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      temporaryPassword: _temporaryPassword,
-    };
-  }
-
+ 
   async findByEmail(email: string) {
     const [user] = await db
       .select()
@@ -60,61 +16,61 @@ export class UsersService {
     return user;
   }
 
-  async changePassword(userId: number, currentPassword: string, newPassword: string,) {
+  async updateRefreshToken(
+    userId: number,
+    hashedRefreshToken: string | null,
+  ) {
+    await db
+      .update(users)
+      .set({
+        hashedRefreshToken,
+      })
+      .where(eq(users.id, userId));
+  }
+  async findByIdWithRefreshToken(
+    id: number,
+  ) {
     const [user] = await db
       .select()
       .from(users)
-      .where(eq(users.id, userId));
+      .where(eq(users.id, id));
 
-    if (!user) {
-      throw new NotFoundException(
-        'Usuario no encontrado',
-      );
-    }
-    const _passwordMatch = await bcrypt.compare(
-      currentPassword,
-      user.password,);
-
-    if (!_passwordMatch) {
-      throw new BadRequestException(
-        'La contraseña actual es incorrecta',
-      );
-    }
-
-    const _hashedPassword = await bcrypt.hash(
-      newPassword,
-      10,
-    );
-
-    await db.update(users)
-      .set({
-        password: _hashedPassword,
-        mustChangePassword: false,
-      })
-      .where(eq(users.id, userId));
-    return {
-      message: 'Contraseña actualizada correctamente',
-    };
+    return user;
   }
-  async updateRefreshToken(
+  async updateRole(
   userId: number,
-  hashedRefreshToken: string | null,
-) {
-  await db
-    .update(users)
-    .set({
-      hashedRefreshToken,
-    })
-    .where(eq(users.id, userId));
-}
-async findByIdWithRefreshToken(
-  id: number,
+  role: UserRole,
 ) {
   const [user] = await db
     .select()
     .from(users)
-    .where(eq(users.id, id));
+    .where(eq(users.id, userId));
 
-  return user;
+  if (!user) {
+    throw new NotFoundException(
+      'Usuario no encontrado',
+    );
+  }
+
+  if (user.role === UserRole.ADMIN) {
+    throw new BadRequestException(
+      'No se puede modificar el rol de otro administrador',
+    );
+  }
+
+  const [updatedUser] = await db
+    .update(users)
+    .set({
+      role,
+    })
+    .where(eq(users.id, userId))
+    .returning();
+
+  return {
+    id: updatedUser.id,
+    name: updatedUser.name,
+    email: updatedUser.email,
+    role: updatedUser.role,
+  };
 }
 }

@@ -29,18 +29,19 @@
   - `total_amount`
   - `payment_method`
   - `created_at`
+  - `created_by`
 - Tabla `users` creada con los siguientes campos:
   - `id`
   - `name`
   - `email`
   - `password`
   - `role`
-  - `must_change_password`
   - `hashed_refresh_token`
 
 ### Índices
 
 - Índice `sales_created_at_idx`.
+- Índice `sales_created_by_idx`.
 - Índice compuesto `sales_payment_created_idx`.
 
 ### NestJS
@@ -66,7 +67,6 @@
 - DTO `CreateSaleDto` implementado.
 - DTO `UpdateSaleDto` implementado utilizando `PartialType`.
 - DTO `QuerySaleDto` implementado.
-- DTO `CreateUserDto` implementado.
 - DTO `LoginDto` implementado.
 - `ValidationPipe` configurado globalmente.
 - Validación de:
@@ -75,7 +75,7 @@
   - roles válidos.
   - correo electrónico válido.
   - validación de correo electrónico único.
-  - longitud mínima de nueva contraseña.
+  - longitud mínima de contraseña.
   - paginación.
   - filtros de fechas.
   - transformación automática de tipos.
@@ -122,18 +122,18 @@ GET /sales?sort=desc
 
 ### Usuarios
 
-- POST `/users`
-  - Registro de usuarios.
-  - Persistencia de usuarios en PostgreSQL.
-  - Asignación y validación de roles.
-  - Validación de correo electrónico duplicado.
-  - Generación automática de contraseña temporal.
-  - Inicialización automática de `must_change_password`.
-- PATCH `/users/change-password`
-  - Cambio seguro de contraseña.
-  - Verificación de contraseña actual.
-  - Actualización mediante bcrypt.
-  - Inicialización de cuentas mediante `must_change_password`.
+- GET `/users/profile`
+  - Obtención del perfil del usuario autenticado.
+
+- PATCH `/users/:id/role`
+  - Actualización del rol de un usuario.
+  - Acceso exclusivo para ADMIN.
+  - Validación de usuario existente.
+  - Restricción para modificar usuarios con rol ADMIN.
+  - Soporte para roles:
+    - ADMIN
+    - EMPLOYEE
+    - CUSTOMER
 
 ### Autenticación
 
@@ -146,13 +146,16 @@ GET /sales?sort=desc
 - Endpoint protegido para obtener el usuario autenticado:
   - GET `/users/profile`
 - Inclusión del rol dentro del JWT.
-- Inclusión del indicador `mustChangePassword` en la respuesta de login.
 - POST `/auth/refresh`
   - Renovación de sesión mediante Refresh Token.
   - Generación automática de nuevo Access Token.
   - Rotación automática de Refresh Tokens.
   - Validación de Refresh Token almacenado en base de datos.
-
+- POST `/auth/register`
+  - Registro público de usuarios.
+  - Validación de correo electrónico único.
+  - Asignación automática del rol CUSTOMER.
+  - Hash de contraseñas mediante bcrypt.
 - POST `/auth/logout`
   - Cierre de sesión seguro.
   - Invalidación del Refresh Token almacenado.
@@ -177,14 +180,10 @@ GET /sales?sort=desc
 - Implementación de RolesGuard.
 - Implementación del decorador `@Roles()`.
 - Control de acceso basado en roles (RBAC).
-- Protección de creación de usuarios mediante rol ADMIN.
-- Flujo obligatorio de cambio de contraseña.
 - Restricción de acceso a ventas históricas para EMPLOYEE.
 - Restricción de modificación de ventas históricas para EMPLOYEE.
 - Restricción de eliminación de ventas históricas para EMPLOYEE.
 - Restricción de acceso a reportes mensuales para EMPLOYEE.
-- Generación automática de contraseñas temporales para nuevos usuarios.
-- Flujo de primer acceso con cambio obligatorio de contraseña.
 - Validación estricta mediante ValidationPipe.
 - Eliminación automática de propiedades no permitidas (`whitelist`).
 - Bloqueo de propiedades no permitidas (`forbidNonWhitelisted`).
@@ -203,6 +202,20 @@ GET /sales?sort=desc
 - Protección contra ataques de fuerza bruta.
 - Limitación de solicitudes por IP.
 - Protección específica de los endpoints `/auth/login` y `/auth/refresh`.
+- Registro público de usuarios mediante `/auth/register`.
+- Asignación automática del rol CUSTOMER.
+- Restricción de acceso al módulo de ventas para usuarios CUSTOMER.
+- Restricción de acceso al módulo de reportes para usuarios CUSTOMER.
+- Actualización de roles restringida exclusivamente a usuarios ADMIN.
+- Restricción para modificar usuarios con rol ADMIN.
+- Asociación de ventas con el usuario que las registró.
+- Restricción de acceso a ventas según propietario.
+- Restricción de modificación de ventas de otros empleados.
+- Restricción de eliminación de ventas de otros empleados.
+- Cada venta queda asociada al usuario que la creó mediante `createdBy`.
+- Los usuarios EMPLOYEE solo pueden consultar sus propias ventas del día actual.
+- Los usuarios EMPLOYEE solo pueden modificar sus propias ventas del día actual.
+- Los usuarios EMPLOYEE solo pueden eliminar sus propias ventas del día actual.
 
 ### Reportes
 
@@ -249,8 +262,8 @@ Implementado en:
 - PATCH `/sales/:id`
 - DELETE `/sales/:id`
 - POST `/auth/login`
-- POST `/users`
-- PATCH `/users/change-password`
+- POST `/auth/register`
+- PATCH `/users/:id/role`
 - Endpoints protegidos mediante RBAC.
 
 ### Documentación
@@ -335,8 +348,11 @@ GET /api
 - Decoradores personalizados.
 - SetMetadata.
 - Reflector.
-- Cambio seguro de contraseñas.
-- Inicialización de usuarios.
+- Registro de usuarios.
+- Refresh Tokens.
+- Refresh Token Rotation.
+- Role Based Access Control (RBAC).
+- Gestión de roles de usuarios.
 - Ordenamiento de resultados.
 - Uso de `ORDER BY`.
 - Ordenamiento ascendente y descendente.
@@ -395,6 +411,9 @@ GET /api
 - Validación de reportes.
 - Validación de operaciones CRUD.
 - Validación de Rate Limiting mediante pruebas E2E.
+- Trazabilidad de ventas.
+- Relaciones entre tablas mediante claves foráneas.
+- Auditoría básica de operaciones.
 
 #### Resultado actual
 
@@ -420,14 +439,35 @@ GET /api
 - Decorador personalizado `@Roles()`.
 - Implementación de `RolesGuard`.
 - Autorización basada en roles.
-- Restricción de creación de usuarios para ADMIN.
 - Inclusión del rol dentro del JWT.
 - Validación de permisos mediante metadata y Reflector.
-- Restricción de acceso a ventas históricas para EMPLOYEE.
-- Restricción de modificación de ventas históricas para EMPLOYEE.
-- Restricción de eliminación de ventas históricas para EMPLOYEE.
-- Restricción de acceso a reportes mensuales para EMPLOYEE.
-- Filtrado automático de ventas del día actual para EMPLOYEE.
+
+Roles:
+
+- ADMIN
+  - Acceso completo al sistema.
+  - Gestión de ventas.
+  - Acceso a todos los reportes.
+  - Actualización de roles de usuarios.
+
+- EMPLOYEE
+  - Crear ventas.
+  - Consultar sus propias ventas del día actual.
+  - Modificar sus propias ventas del día actual.
+  - Eliminar sus propias ventas del día actual.
+  - Acceso al reporte diario.
+  - Sin acceso a ventas históricas.
+  - Sin acceso a ventas de otros empleados.
+  - Sin acceso al reporte mensual.
+  - Sin acceso al dashboard administrativo.
+
+- CUSTOMER
+  - Registro e inicio de sesión.
+  - Consulta de perfil.
+  - Sin acceso a ventas.
+  - Sin acceso a reportes.
+  - Sin acceso al dashboard.
+  - Sin acceso a la gestión de usuarios.
 
 ### Inicialización del sistema
 
@@ -438,23 +478,21 @@ GET /api
   Email: admin@restaurant.com
   Password: admin123
 
-- Cambio obligatorio de contraseña en el primer acceso.
-
 ### Endpoints protegidos mediante JWT
 
 - GET `/users/profile`
-- PATCH `/users/change-password`
 - GET `/sales`
-- POST `/users`
-- POST   /sales
-- PATCH  /sales/:id
-- DELETE /sales/:id
+- POST   `/sales`
+- PATCH  `/sales/:id`
+- DELETE `/sales/:id`
 - GET `/reports/daily`
 - GET `/reports/monthly`
 - GET `/reports/dashboard`
+- GET `/sales/:id`
 
 ### Endpoints de autenticación
 
+- POST `/auth/register`
 - POST `/auth/login`
 - POST `/auth/refresh`
 - POST `/auth/logout`

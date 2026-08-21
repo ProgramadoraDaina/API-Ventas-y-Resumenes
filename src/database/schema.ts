@@ -9,19 +9,32 @@ export const paymentMethodEnum = pgEnum('payment_method',
   ],
 );/*validamos en 2 niveles (NestJS y PostgreSQL), eso se llama defensa en profundidad*/
 
-export const sales = pgTable('sales', {/*tabla ventas*/
-  id: serial('id').primaryKey(),
+export const userRoleEnum = pgEnum('user_role', [
+  'admin',
+  'employee',
+  'customer',
+])
 
-  totalAmount: integer('total_amount')
-    .notNull(),
+export const sales = pgTable(
+  'sales',
+  {
+    id: serial('id').primaryKey(),
 
-  paymentMethod: paymentMethodEnum('payment_method',)
-    .notNull(),
+    totalAmount: integer('total_amount')
+      .notNull(),
 
-  createdAt: timestamp('created_at')
-    .defaultNow()
-    .notNull(),
-},
+    paymentMethod: paymentMethodEnum(
+      'payment_method',
+    ).notNull(),
+
+    createdAt: timestamp('created_at')
+      .defaultNow()
+      .notNull(),
+
+    createdBy: integer('created_by')
+      .references(() => users.id)
+      .notNull(),
+  },
   (table) => ({
     createdAtIdx: index(
       'sales_created_at_idx',
@@ -37,15 +50,14 @@ export const sales = pgTable('sales', {/*tabla ventas*/
       table.paymentMethod,
       table.createdAt,
     ),
-  }),
+
+    createdByIdx: index(
+      'sales_created_by_idx',
+    ).on(table.createdBy),
+  })
 );
 
-export const userRoleEnum = pgEnum('user_role', [
-  'admin',
-  'employee'
-])
-
-export const users = pgTable('users', { /**tabla usuarios*/
+export const users = pgTable('users', {/**tabla usuarios*/
   id: serial('id').primaryKey(),
 
   name: varchar('name', {
@@ -63,12 +75,8 @@ export const users = pgTable('users', { /**tabla usuarios*/
   }).notNull(),
 
   role: userRoleEnum('role')
-    .default('employee')
+    .default('customer')
     .notNull(),
 
-  mustChangePassword: boolean('must_change_password')
-    .default(true)
-    .notNull(),
-
-    hashedRefreshToken: text('hashed_refresh_token'),
+  hashedRefreshToken: text('hashed_refresh_token'),
 });

@@ -1,4 +1,4 @@
-import { Body, Req, Controller, Post } from '@nestjs/common';
+import { Body, Req, Controller, Post, } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags, } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -8,12 +8,34 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { Throttle } from '@nestjs/throttler';
+import { RegisterDto } from './dto/register.dto';
+
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,) { }
+
+  @Post('register')
+  @ApiOperation({
+    summary: 'Registrar usuario',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Usuario registrado correctamente',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Ya existe un usuario con ese email',
+  })
+  register(
+    @Body() registerDto: RegisterDto,
+  ) {
+    return this.authService.register(
+      registerDto,
+    );
+  }
 
   @Post('login')
   @Throttle({

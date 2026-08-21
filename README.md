@@ -14,7 +14,6 @@ El objetivo es construir una API REST para la gestión de ventas que permita:
 - Gestionar usuarios.
 - Autenticar usuarios mediante JWT.
 - Implementar control de acceso basado en roles (RBAC).
-- Gestionar contraseñas temporales y cambios obligatorios de contraseña.
 
 ## Funcionalidades implementadas
 
@@ -25,15 +24,13 @@ El objetivo es construir una API REST para la gestión de ventas que permita:
 - Control de acceso basado en roles (RBAC).
 - Protección de endpoints.
 - Restricciones según el rol del usuario.
-- Contraseñas temporales.
-- Cambio obligatorio de contraseña en el primer acceso.
 - Reportes diarios y mensuales.
 - Manejo de excepciones.
 - Documentación interactiva mediante Swagger/OpenAPI.
 - Connection Pooling mediante pg.Pool.
 - Optimización de consultas mediante índices PostgreSQL.
-
-> Los usuarios no envían contraseña durante el registro. El sistema genera automáticamente una contraseña temporal y obliga a cambiarla en el primer acceso.
+- Trazabilidad de ventas mediante asociación con usuarios.
+- Restricción de acceso a ventas según propietario.
 
 ---
 
@@ -78,6 +75,7 @@ La aplicación incorpora optimizaciones para mejorar la escalabilidad y el rendi
 
 - Connection Pooling mediante `pg.Pool`.
 - Índice sobre `created_at` para optimizar reportes diarios y mensuales.
+- Índice sobre `created_by` para optimizar consultas por empleado.
 - Índice compuesto sobre (`payment_method`, `created_at`) para optimizar filtros por método de pago y rangos de fechas.
 
 ### Documentación

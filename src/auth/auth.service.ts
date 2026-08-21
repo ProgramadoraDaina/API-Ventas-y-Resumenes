@@ -2,9 +2,13 @@ import * as bcrypt from 'bcrypt';
 import { JwtService, JwtSignOptions, } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
-import { ForbiddenException, Injectable, UnauthorizedException, } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, UnauthorizedException, } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createHash } from 'node:crypto';
+import { RegisterDto } from './dto/register.dto';
+import { db } from '../database/drizzle';
+import { users } from '../database/schema';
+
 @Injectable()
 export class AuthService {
   private readonly SALT_ROUNDS = 10;
@@ -14,7 +18,44 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,) { }
 
+  async register(registerDto: RegisterDto) {
+    
+    const _existingUser =
+      await this.usersService.findByEmail(
+        registerDto.email,
+      );
+
+    if (_existingUser) {
+      throw new BadRequestException(
+        'Ya existe un usuario con ese email',
+      );
+    }
+
+    const _hashedPassword = await bcrypt.hash(
+      registerDto.password,
+      10,
+    );
+
+    const [user] = await db
+      .insert(users)
+      .values({
+        name: registerDto.name,
+        email: registerDto.email,
+        password: _hashedPassword,
+        role: 'customer',
+      })
+      .returning();
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    };
+  }
+
   async login(loginDto: LoginDto) {
+
     const user = await this.usersService.findByEmail(
       loginDto.email,
     );
@@ -29,7 +70,7 @@ export class AuthService {
     const _passwordMatch = await bcrypt.compare(
       loginDto.password,
       user.password,);
-
+   
     if (!_passwordMatch) {
       throw new UnauthorizedException(
         'Credenciales inválidas',
@@ -42,9 +83,7 @@ export class AuthService {
       user.role,
     );
 
-    return {
-      ...tokens, mustChangePassword: user.mustChangePassword,
-    };
+    return tokens;
   }
   private async generarTokens(
     userId: number,

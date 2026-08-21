@@ -7,11 +7,15 @@ import { QuerySaleDto } from './dto/query-sale.dto';
 import { UseGuards, Request } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';
-import { ApiQuery, ApiTags, ApiOperation, ApiResponse, } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, } from '@nestjs/swagger';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { UserRole } from '../users/enums/user-role.enum';
 
 @ApiTags('Sales')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.ADMIN, UserRole.EMPLOYEE,)
 @Controller('sales')
 export class SalesController {
     constructor(private readonly salesService: SalesService,) { }
@@ -25,8 +29,12 @@ export class SalesController {
         description: 'Venta creada correctamente',
     })
     create(
-        @Body() createSaleDto: CreateSaleDto,) {
-        return this.salesService.create(createSaleDto);
+        @Body() createSaleDto: CreateSaleDto,
+        @Request() req: { user: AuthUser },) {
+        return this.salesService.create(
+            createSaleDto,
+            req.user,
+        );
     }
 
     @Get()
@@ -83,18 +91,18 @@ export class SalesController {
     }
 
     @Delete(':id')
-@ApiOperation({
-  summary: 'Eliminar una venta',
-})
-@ApiResponse({
-  status: 200,
-  description: 'Venta eliminada correctamente',
-})
-@ApiResponse({
-  status: 404,
-  description: 'Venta no encontrada',
-})
-remove(@Param('id', ParseIntPipe) id: number,
+    @ApiOperation({
+        summary: 'Eliminar una venta',
+    })
+    @ApiResponse({
+        status: 200,
+        description: 'Venta eliminada correctamente',
+    })
+    @ApiResponse({
+        status: 404,
+        description: 'Venta no encontrada',
+    })
+    remove(@Param('id', ParseIntPipe) id: number,
         @Request() req: { user: AuthUser },) {
         return this.salesService.remove(id, req.user);
     }
