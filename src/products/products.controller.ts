@@ -36,6 +36,7 @@ export class ProductsController {
   @Post()
   @ApiOperation({ summary: 'Crear un producto' })
   @ApiResponse({ status: 201, description: 'Producto creado' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos' })
   create(
     @Body()
     createProductDto: CreateProductDto,
@@ -46,6 +47,7 @@ export class ProductsController {
   @Patch(':id')
   @ApiOperation({ summary: 'Actualizar un producto' })
   @ApiResponse({ status: 200, description: 'Producto actualizado' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos' })
   @ApiResponse({ status: 404, description: 'Producto no encontrado' })
   update(
     @Param('id', ParseUUIDPipe)

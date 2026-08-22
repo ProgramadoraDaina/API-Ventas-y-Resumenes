@@ -28,6 +28,18 @@ export class SalesController {
         status: 201,
         description: 'Venta creada correctamente',
     })
+    @ApiResponse({
+        status: 400,
+        description: 'Datos inválidos',
+    })
+    @ApiResponse({
+        status: 404,
+        description: 'Producto no encontrado',
+    })
+    @ApiResponse({
+        status: 403,
+        description: 'Stock insuficiente',
+    })
     create(
         @Body() createSaleDto: CreateSaleDto,
         @Request() req: { user: AuthUser },) {
@@ -80,6 +92,10 @@ export class SalesController {
     @ApiResponse({
         status: 200,
         description: 'Venta actualizada correctamente',
+    })
+    @ApiResponse({
+        status: 400,
+        description: 'Datos inválidos',
     })
     @ApiResponse({
         status: 404,

@@ -64,6 +64,17 @@ export class AuthController {
   @ApiBearerAuth()
   @Post('logout')
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: 'Cerrar sesión',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Sesión cerrada correctamente',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'No autorizado',
+  })
   logout(@Req() req) {
     return this.authService.logout(
       req.user.id,
