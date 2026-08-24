@@ -6,10 +6,6 @@ API REST desarrollada con NestJS, TypeScript, PostgreSQL y Drizzle ORM para gest
 
 - **Daina Paucar** — GitHub: [ProgramadoraDaina](https://github.com/ProgramadoraDaina)
 
-## Idea heredada del Segundo Proyecto Integrador
-
-Este proyecto es la capa de servidor de la idea desarrollada en el Segundo Proyecto Integrador: la gestión de ventas de un restaurante. Lo que antes vivía en el navegador (localStorage/Zustand) ahora se modela como tablas en PostgreSQL (usuarios, productos y ventas), se asociaron los datos al usuario dueño (`created_by`) y la lógica de negocio (cálculo de totales, descuento de stock, reportes diarios y mensuales) se resuelve en los servicios de Nest.
-
 ## Objetivo del proyecto
 
 El objetivo es construir una API REST para la gestión de ventas que permita:
@@ -161,47 +157,47 @@ pnpm drizzle-kit push
 
 ### Autenticación
 
-| Método | Ruta | Descripción | Acceso |
-| --- | --- | --- | --- |
-| POST | `/auth/register` | Crear un usuario nuevo (rol `customer`) | Público |
-| POST | `/auth/login` | Iniciar sesión y obtener `access_token` + `refresh_token` | Público (rate limiting reforzado) |
-| POST | `/auth/refresh` | Renovar el access token con un refresh token válido | Refresh token |
-| POST | `/auth/logout` | Cerrar sesión e invalidar el refresh token | JWT |
+|Método|       Ruta       |                        Descripción                        |     Acceso    |
+| ---  |       ---        |                            ---                            |      ---      |
+| POST | `/auth/register` | Crear un usuario nuevo (rol `customer`)                   |    Público    |
+| POST | `/auth/login`    | Iniciar sesión y obtener `access_token` + `refresh_token` |Público (rate limiting reforzado)|
+| POST | `/auth/refresh`  | Renovar el access token con un refresh token válido       | Refresh token |
+| POST | `/auth/logout`   | Cerrar sesión e invalidar el refresh token                | JWT           |
 
 ### Ventas
 
-| Método | Ruta | Descripción | Acceso |
-| --- | --- | --- | --- |
-| GET | `/sales` | Listar ventas con paginación, filtros y ordenamiento | JWT (ADMIN/EMPLOYEE) |
-| GET | `/sales/:id` | Obtener una venta por ID | JWT (ADMIN/EMPLOYEE) |
-| POST | `/sales` | Crear una venta (verifica stock y lo descuenta) | JWT (ADMIN/EMPLOYEE) |
-| PATCH | `/sales/:id` | Actualizar una venta | JWT (ADMIN/EMPLOYEE) |
-| DELETE | `/sales/:id` | Eliminar una venta | JWT (ADMIN/EMPLOYEE) |
+| Método |     Ruta     |                      Descripción                     |        Acceso        |
+|  ---   |      ---     |                          ---                         |         ---          |
+| GET    | `/sales`     | Listar ventas con paginación, filtros y ordenamiento | JWT (ADMIN/EMPLOYEE) |
+| GET    | `/sales/:id` | Obtener una venta por ID                             | JWT (ADMIN/EMPLOYEE) |
+| POST   | `/sales`     | Crear una venta (verifica stock y lo descuenta)      | JWT (ADMIN/EMPLOYEE) |
+| PATCH  | `/sales/:id` | Actualizar una venta                                 | JWT (ADMIN/EMPLOYEE) |
+| DELETE | `/sales/:id` | Eliminar una venta                                   | JWT (ADMIN/EMPLOYEE) |
 
 ### Productos
 
-| Método | Ruta | Descripción | Acceso |
-| --- | --- | --- | --- |
-| GET | `/products` | Listar productos | JWT (ADMIN/EMPLOYEE) |
-| GET | `/products/:id` | Obtener un producto por ID | JWT (ADMIN/EMPLOYEE) |
-| POST | `/products` | Crear un producto | JWT (ADMIN/EMPLOYEE) |
-| PATCH | `/products/:id` | Actualizar un producto | JWT (ADMIN/EMPLOYEE) |
-| DELETE | `/products/:id` | Eliminar un producto | JWT (ADMIN/EMPLOYEE) |
+| Método |       Ruta      |        Descripción         |        Acceso        |
+|   ---  |       ---       |            ---             |         ---          |
+| GET    | `/products`     | Listar productos           | JWT (ADMIN/EMPLOYEE) |
+| GET    | `/products/:id` | Obtener un producto por ID | JWT (ADMIN/EMPLOYEE) |
+| POST   | `/products`     | Crear un producto          | JWT (ADMIN/EMPLOYEE) |
+| PATCH  | `/products/:id` | Actualizar un producto     | JWT (ADMIN/EMPLOYEE) |
+| DELETE | `/products/:id` | Eliminar un producto       | JWT (ADMIN/EMPLOYEE) |
 
 ### Usuarios
 
-| Método | Ruta | Descripción | Acceso |
-| --- | --- | --- | --- |
-| GET | `/users/profile` | Obtener el perfil del usuario autenticado | JWT |
-| PATCH | `/users/:id/role` | Actualizar el rol de un usuario | JWT (ADMIN) |
+| Método |        Ruta       |                Descripción                |   Acceso    |
+|   ---  |         ---       |                    ---                    |     ---     |
+| GET    | `/users/profile`  | Obtener el perfil del usuario autenticado |     JWT     |
+| PATCH  | `/users/:id/role` | Actualizar el rol de un usuario           | JWT (ADMIN) |
 
 ### Reportes
 
-| Método | Ruta | Descripción | Acceso |
-| --- | --- | --- | --- |
-| GET | `/reports/daily` | Reporte diario de ventas | JWT (ADMIN/EMPLOYEE) |
-| GET | `/reports/monthly` | Reporte mensual agrupado por día | JWT (ADMIN) |
-| GET | `/reports/dashboard` | Métricas del día y del mes | JWT (ADMIN) |
+| Método |    Ruta    | Descripción | Acceso |
+|   ---  |    ---    | --- | --- |
+| GET    | `/reports/daily` | Reporte diario de ventas | JWT (ADMIN/EMPLOYEE) |
+| GET    | `/reports/monthly` | Reporte mensual agrupado por día | JWT (ADMIN) |
+| GET    | `/reports/dashboard` | Métricas del día y del mes | JWT (ADMIN) |
 
 **Nota:** el acceso a los datos está asociado al usuario propietario (`created_by`). El rol `EMPLOYEE` solo puede operar sobre sus propias ventas del día actual.
 pnpm run start:dev
