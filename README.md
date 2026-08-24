@@ -141,7 +141,7 @@ JWT_EXPIRES_IN=15m
 
 JWT_REFRESH_EXPIRES_IN=7d
 
-CORS_ORIGIN=http://localhost:3000
+CORS_ORIGIN=http://localhost:3001
 ```
 
 ### 4. Ejecutar migraciones
@@ -193,10 +193,10 @@ pnpm drizzle-kit push
 
 ### Reportes
 
-| Método |    Ruta    | Descripción | Acceso |
-|   ---  |    ---    | --- | --- |
-| GET    | `/reports/daily` | Reporte diario de ventas | JWT (ADMIN/EMPLOYEE) |
-| GET    | `/reports/monthly` | Reporte mensual agrupado por día | JWT (ADMIN) |
+| Método |         Ruta         |        Descripción        | Acceso |
+|   ---  |          ---         |            ---            | --- |
+| GET    | `/reports/daily`     | Reporte diario de ventas | JWT (ADMIN/EMPLOYEE) |
+| GET    | `/reports/monthly`   | Reporte mensual agrupado por día | JWT (ADMIN) |
 | GET    | `/reports/dashboard` | Métricas del día y del mes | JWT (ADMIN) |
 
 **Nota:** el acceso a los datos está asociado al usuario propietario (`created_by`). El rol `EMPLOYEE` solo puede operar sobre sus propias ventas del día actual.

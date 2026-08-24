@@ -42,7 +42,7 @@ class EnvironmentVariables {
 
     @IsString({
         message:
-            'CORS_ORIGIN es obligatoria (ej: http://localhost:3000)',
+            'CORS_ORIGIN es obligatoria (ej: http://localhost:3001)',
     })
     CORS_ORIGIN!: string;
 }
