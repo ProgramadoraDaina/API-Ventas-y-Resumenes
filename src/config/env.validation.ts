@@ -66,7 +66,7 @@ export function validate(
     );
 
     if (errors.length > 0) {
-        const mensajes = errors.flatMap(
+        const messages = errors.flatMap(
             (error) =>
                 Object.values(
                     error.constraints ?? {},
@@ -74,7 +74,7 @@ export function validate(
         );
 
         throw new Error(
-            `Error en variables de entorno:\n- ${mensajes.join(
+            `Error en variables de entorno:\n- ${messages.join(
                 '\n- ',
             )}`,
         );

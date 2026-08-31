@@ -77,7 +77,7 @@ export class AuthService {
       );
     }
 
-    const tokens = await this.generarTokens(
+    const tokens = await this.generateTokens(
       user.id,
       user.email,
       user.role,
@@ -85,7 +85,7 @@ export class AuthService {
 
     return tokens;
   }
-  private async generarTokens(
+  private async generateTokens(
     userId: string,
     email: string,
     role: string,
@@ -121,7 +121,7 @@ export class AuthService {
 
     const hashedRefreshToken =
       await bcrypt.hash(
-        this.resumir(refresh_token),
+        this.digestToken(refresh_token),
         this.SALT_ROUNDS,
       );
 
@@ -135,7 +135,7 @@ export class AuthService {
       refresh_token,
     };
   }
-  private resumir(token: string): string {
+  private digestToken(token: string): string {
     return createHash('sha256')
       .update(token)
       .digest('hex');
@@ -164,13 +164,13 @@ export class AuthService {
       );
     }
 
-    const coincide =
+    const matches =
       await bcrypt.compare(
-        this.resumir(refreshToken),
+        this.digestToken(refreshToken),
         user.hashedRefreshToken,
       );
 
-    if (!coincide) {
+    if (!matches) {
       await this.usersService.updateRefreshToken(
         userId,
         null,
@@ -181,7 +181,7 @@ export class AuthService {
       );
     }
 
-    return this.generarTokens(
+    return this.generateTokens(
       user.id,
       user.email,
       user.role,

@@ -20,7 +20,9 @@ async function bootstrap() {
       'CORS_ORIGIN',
     ),
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-    credentials: true,
+    credentials: true,/*Permite que la API acepte peticiones que incluyan información sensible de
+                      autenticación en las cabeceras, como cookies, encabezados de Autorización
+                      (tokens)*/
   });
 
   app.use(
