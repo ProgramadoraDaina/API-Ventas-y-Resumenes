@@ -1,0 +1,68 @@
+services:
+  # ==========================
+  # Base de datos PostgreSQL
+  # ==========================
+  db:
+    image: postgres:16-alpine
+    container_name: restaurant-sales-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-restaurant-sales}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${DB_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ==========================
+  # Migraciones (Drizzle Kit)
+  # ==========================
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: build
+    container_name: restaurant-sales-migrate
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@db:5432/${DB_NAME:-restaurant-sales}
+    depends_on:
+      db:
+        condition: service_healthy
+    command: sh -c "pnpm drizzle-kit push"
+    restart: "no"
+
+  # ==========================
+  # API (NestJS)
+  # ==========================
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: restaurant-sales-api
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3001}:3001"
+    env_file:
+      - .env
+    environment:
+      # Apuntar DATABASE_URL al servicio db dentro de docker-compose
+      DATABASE_URL: postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@db:5432/${DB_NAME:-restaurant-sales}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3001/api"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  pgdata:
